@@ -1,0 +1,24 @@
+
+analyzer:
+  url: https://10.0.0.10
+  apiKey: c7213f09-b399-4c71-9d1c-3a99905215e9
+  maxFileSize: 60000000
+  pullInterval: 60s
+  ignoreTLSError: True
+  productName: cia
+  sourceID: 500
+  sourceName: pipeline
+  clientUUID: c7213f09-b399-4c71-9d1c-3a99905215e0
+allow:
+  highRisk: false
+  mediumRisk: false
+  lowRisk: false 
+  error: false
+  unscannable: true 
+  timeout: true
+  bigFile: true
+ignore:
+  - '*.txt'
+  - '*.tmp'
+folder: testing
+  
