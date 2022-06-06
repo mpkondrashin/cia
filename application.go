@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/danwakefield/fnmatch"
@@ -34,8 +35,9 @@ type Application struct {
 	analyzer     ddan.ClientInterace
 	maxFileSize  int
 	ignore       []string
+	tasks        chan string
 	wg           sync.WaitGroup
-	result       chan struct{}
+	returnCode   int32
 	pullInterval time.Duration
 	accept       map[string]bool
 }
@@ -44,7 +46,7 @@ func NewApplication(analyzer ddan.ClientInterace) *Application {
 	return &Application{
 		analyzer:     analyzer,
 		maxFileSize:  50_000_000,
-		result:       make(chan struct{}, 1000000),
+		tasks:        make(chan string),
 		pullInterval: 60 * time.Second,
 		accept:       make(map[string]bool),
 	}
@@ -70,6 +72,10 @@ func (a *Application) SetMaxFileSize(maxFileSize int) *Application {
 	return a
 }
 
+func (a *Application) IncReturnCode() {
+	_ = atomic.AddInt32(&a.returnCode, 1)
+}
+
 func (a *Application) ProcessFolder(folder string) error {
 	log.Print(a)
 	err := a.analyzer.Register(context.TODO())
@@ -80,6 +86,7 @@ func (a *Application) ProcessFolder(folder string) error {
 	} else {
 		log.Print("Registration complete")
 	}
+	a.StartDispatchers()
 	log.Printf("Process folder: %s", folder)
 	start := time.Now()
 	count := 0
@@ -101,8 +108,13 @@ func (a *Application) ProcessFolder(folder string) error {
 		return err
 	}
 	log.Printf("Scan complete. Found %d files. Waiting for analysis results", count)
+	close(a.tasks)
 	a.wg.Wait()
-	return a.ProcessResults()
+	if a.returnCode > 0 {
+		err = fmt.Errorf("Found %d inadmissible files", a.returnCode)
+	}
+	return nil
+
 }
 
 func (a *Application) Ignore(path string) (matched bool, err error) {
@@ -128,34 +140,35 @@ func (a *Application) ProcessFile(path string, info os.FileInfo) error {
 	if info.Size() > int64(a.maxFileSize) {
 		if !a.accept["bigFile"] {
 			log.Printf("Too big (%d) bytes file: %s", info.Size(), path)
-			a.result <- struct{}{}
+			a.IncReturnCode()
 		} else {
 			log.Printf("Skip %d bytes file: %s", info.Size(), path)
 		}
 		return nil
 	}
-	a.wg.Add(1)
-	go a.ProcessGoroutine(path)
+	a.tasks <- path
 	return nil
 }
 
-func (a *Application) ProcessResults() (err error) {
-	close(a.result)
-	if len(a.result) > 0 {
-		err = fmt.Errorf("Found %d inadmissible files", len(a.result))
+func (a *Application) StartDispatchers() {
+	tasks := 100
+	a.wg.Add(tasks)
+	for i := 0; i < tasks; i++ {
+		go a.Dispatcher()
 	}
-	return
 }
 
-func (a *Application) ProcessGoroutine(path string) {
+func (a *Application) Dispatcher() {
 	defer a.wg.Done()
-	if a.CheckFile(path) {
-		a.result <- struct{}{}
+	for path := range a.tasks {
+		if a.CheckFile(path) {
+			a.IncReturnCode()
+		}
 	}
 }
 
 func (a *Application) CheckFile(path string) bool {
-	//log.Printf("CheckFile %s", path)
+	log.Printf("CheckFile %s", path)
 	sha1, err := FileSHA1(path)
 	if err != nil {
 		log.Fatal(err)
@@ -176,30 +189,6 @@ func (a *Application) CheckFile(path string) bool {
 	log.Printf("Uploaded %s", path)
 	return a.WaitForResult(path, sha1)
 }
-
-/*
-func (a *Application) __checkDuplicate(sha1 string) ([]string, error) {
-	sha1List := []string{sha1}
-	for i := 0; i < 2; i++ {
-		duplicates, err := a.analyzer.CheckDuplicateSample(context.TODO(), sha1List, 0)
-		if err != nil {
-			var ddanErr *ddan.APIError
-			if !errors.As(err, &ddanErr) || ddanErr.Response != ddan.ResponseNotRegistered {
-				return nil, err
-			}
-			log.Print("Not Registered")
-			err := a.analyzer.Register(context.TODO())
-			if err != nil {
-				return nil, err
-			}
-			log.Print("Registration complete")
-			continue
-		}
-		return duplicates, nil
-	}
-	return nil, fmt.Errorf("Count not register")
-}
-*/
 
 // WaitForResult - wait for result from Analyzer for file defined by sha1
 func (a *Application) WaitForResult(path, sha1 string) bool {
@@ -232,7 +221,6 @@ func (a *Application) WaitForResult(path, sha1 string) bool {
 			log.Fatalf("Unexpected status value: %v", report.SampleStatus)
 		}
 	}
-	return false
 }
 
 // Pass - return whenever file should be accepted to pass
