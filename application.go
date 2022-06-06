@@ -116,7 +116,7 @@ func (a *Application) Ignore(path string) (matched bool, err error) {
 }
 
 func (a *Application) ProcessFile(path string, info os.FileInfo) error {
-	//log.Printf("ProcessFile(%s)", path)
+	log.Printf("ProcessFile(%s)", path)
 	matched, err := a.Ignore(path)
 	if err != nil {
 		log.Fatal(err)
