@@ -93,10 +93,10 @@ func (a *Application) ProcessFolder(folder string) error {
 		}
 		return a.ProcessFile(path, info)
 	})
-	log.Printf("Scan complete. Found %d files. Waiting for analysis results", count)
 	if err != nil {
 		return err
 	}
+	log.Printf("Scan complete. Found %d files. Waiting for analysis results", count)
 	a.wg.Wait()
 	return a.ProcessResults()
 }
