@@ -77,6 +77,8 @@ func (a *Application) ProcessFolder(folder string) error {
 	}
 	log.Print("Registration complete")
 	log.Printf("Process folder: %s", folder)
+	start := time.Now()
+	count := 0
 	err = filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -84,8 +86,14 @@ func (a *Application) ProcessFolder(folder string) error {
 		if info.IsDir() {
 			return nil
 		}
+		count++
+		if start.After(time.Now().Add(10 * time.Second)) {
+			start = time.Now()
+			log.Printf("Found %d files", count)
+		}
 		return a.ProcessFile(path, info)
 	})
+	log.Printf("Scan complete. Found %d files. Waiting for analysis results", count)
 	if err != nil {
 		return err
 	}
