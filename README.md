@@ -2,5 +2,5 @@
 
 Check all files in given folder using Trend Micro Deep Discovery Analyzer
 
-**Note** this project requires closed source package github.com/mpkondrashin/ddan
+**Note** this project requires access to private repository https://github.com/mpkondrashin/ddan
 
