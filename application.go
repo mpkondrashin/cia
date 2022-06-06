@@ -73,7 +73,7 @@ func (a *Application) ProcessFolder(folder string) error {
 	log.Print(a)
 	err := a.analyzer.Register(context.TODO())
 	if err != nil {
-		return err
+		return fmt.Errorf("Analyzer Register: %w", err)
 	}
 	log.Print("Registration complete")
 	log.Printf("Process folder: %s", folder)
