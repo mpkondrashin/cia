@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha1"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -73,9 +74,12 @@ func (a *Application) ProcessFolder(folder string) error {
 	log.Print(a)
 	err := a.analyzer.Register(context.TODO())
 	if err != nil {
-		return fmt.Errorf("Analyzer Register: %w", err)
+		if !errors.Is(err, ddan.ErrAlreadyRegistered) {
+			return fmt.Errorf("Analyzer Register: %w", err)
+		}
+	} else {
+		log.Print("Registration complete")
 	}
-	log.Print("Registration complete")
 	log.Printf("Process folder: %s", folder)
 	start := time.Now()
 	count := 0
