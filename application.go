@@ -196,9 +196,10 @@ func (a *Application) __checkDuplicate(sha1 string) ([]string, error) {
 	return nil, fmt.Errorf("Count not register")
 }
 */
+
+// WaitForResult - wait for result from Analyzer for file defined by sha1
 func (a *Application) WaitForResult(path, sha1 string) bool {
 	for {
-		a.Sleep()
 		sha1List := []string{sha1}
 		briefReport, err := a.analyzer.GetBriefReport(context.TODO(), sha1List)
 		if err != nil {
@@ -210,8 +211,10 @@ func (a *Application) WaitForResult(path, sha1 string) bool {
 		case ddan.StatusNotFound:
 			log.Fatalf("Not found by Analyzer: %v (%s)", sha1, path)
 		case ddan.StatusArrived:
+			a.SleepLong()
 			continue
 		case ddan.StatusProcessing:
+			a.SleepShort()
 			continue
 		case ddan.StatusError:
 			fallthrough
@@ -228,7 +231,7 @@ func (a *Application) WaitForResult(path, sha1 string) bool {
 	return false
 }
 
-// BriefReportVerdict - get vedrict from BriefReport
+// Pass - return whenever file should be accepted to pass
 func (a *Application) Pass(b ddan.BriefReport) bool {
 	switch b.SampleStatus {
 	case ddan.StatusNotFound, ddan.StatusArrived, ddan.StatusProcessing:
@@ -257,6 +260,22 @@ func (a *Application) Pass(b ddan.BriefReport) bool {
 	return false
 }
 
+// SleepLong - sleep for long when file is still in the queue
+func (a *Application) SleepLong() {
+	a.SleepRandom(a.pullInterval)
+}
+
+// SleepShort - sleep for short when file is alredy being processed
+func (a *Application) SleepShort() {
+	a.SleepRandom(a.pullInterval / 4)
+}
+
+// SleepRandom - sleep for random time between d/2 and d
+func (a *Application) SleepRandom(d time.Duration) {
+	duration := rand.Int63n(int64(d / 2))
+	time.Sleep(time.Duration(duration) + d/2)
+}
+
 // FileSHA1 - return SHA1 for file
 func FileSHA1(filePath string) (string, error) {
 	input, err := os.Open(filePath)
@@ -269,9 +288,4 @@ func FileSHA1(filePath string) (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(hash.Sum(nil)), nil
-}
-
-func (a *Application) Sleep() {
-	duration := rand.Int63n(int64(a.pullInterval))
-	time.Sleep(time.Duration(duration))
 }
