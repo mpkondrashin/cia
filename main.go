@@ -35,6 +35,7 @@ func main() {
 	analyzer, err := setupAnalyzer()
 	app := NewApplication(analyzer)
 	app.SetIgnore(viper.GetStringSlice("ignore"))
+	app.SetJobs(viper.GetInt("analyzer.jobs"))
 	app.SetPause(viper.GetDuration("analyer.pullInterval"))
 	app.SetMaxFileSize(viper.GetInt("analyzer.maxFileSize"))
 
@@ -59,6 +60,7 @@ func setupConfig() error {
 
 	viper.SetDefault("analyzer.maxFileSize", "50000000")
 	viper.SetDefault("analyzer.pullIntervalSec", "60")
+	viper.SetDefault("analyzer.jobs", "100")
 	viper.SetDefault("analyzer.ignoreTLSError", "false")
 	viper.SetDefault("analyzer.productName", "cia")
 	viper.SetDefault("analyzer.sourceID", "500")

@@ -3,6 +3,7 @@ analyzer:
   url: https://10.0.0.10
   apiKey: c7213f09-b399-4c71-9d1c-3a99905215e9
   maxFileSize: 60000000
+  jobs: 100
   pullInterval: 60s
   ignoreTLSError: True
   productName: cia

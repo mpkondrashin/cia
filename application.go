@@ -33,6 +33,7 @@ var verdictList = [...]string{
 type Application struct {
 	analyzer     ddan.ClientInterace
 	maxFileSize  int
+	jobs         int
 	ignore       []string
 	tasks        chan string
 	wg           sync.WaitGroup
@@ -63,6 +64,11 @@ func (a *Application) SetPause(pullInterval time.Duration) *Application {
 
 func (a *Application) SetAction(actionName string, pass bool) *Application {
 	a.accept[actionName] = pass
+	return a
+}
+
+func (a *Application) SetJobs(jobs int) *Application {
+	a.jobs = jobs
 	return a
 }
 
@@ -150,7 +156,7 @@ func (a *Application) ProcessFile(path string, info os.FileInfo) error {
 }
 
 func (a *Application) StartDispatchers() {
-	tasks := 100
+	tasks := 10
 	a.wg.Add(tasks)
 	for i := 0; i < tasks; i++ {
 		go a.Dispatcher()
