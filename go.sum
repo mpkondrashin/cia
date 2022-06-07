@@ -151,6 +151,8 @@ github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyua
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/mpkondrashin/ddan v0.0.4 h1:qaQNoFBjCM037/q0ZT2B6U3HEoHMr/Err2ZJeahNz5M=
 github.com/mpkondrashin/ddan v0.0.4/go.mod h1:2ztiyFEkoqKql8aH1PCh5jRdKWnz8L2+2mm8/+0FTkY=
+github.com/mpkondrashin/ddan v0.0.8 h1:R1gQCBdc+c5DFhdnX2RtIXr63+GACpkU3mnAGcMj1Gw=
+github.com/mpkondrashin/ddan v0.0.8/go.mod h1:2ztiyFEkoqKql8aH1PCh5jRdKWnz8L2+2mm8/+0FTkY=
 github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3ve8=
 github.com/pelletier/go-toml v1.9.5/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml/v2 v2.0.1 h1:8e3L2cCQzLFi2CR4g7vGFuFxX7Jl1kKX8gW+iV0GUKU=
