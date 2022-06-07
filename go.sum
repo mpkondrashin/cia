@@ -147,6 +147,8 @@ github.com/mpkondrashin/ddan v0.0.2 h1:sKYl+YG+1jF1vyqgJhhBZglTFTBia0rImiRCcqw0A
 github.com/mpkondrashin/ddan v0.0.2/go.mod h1:rdfdiZFfk98PI2tFJ0aYZ1Npt/fFLF9P37ccfwDDL+0=
 github.com/mpkondrashin/ddan v0.0.3 h1:9fR7BK5EXqvHqCnsCU8/pZVB9iiOARGJ74Eh/J3rAF8=
 github.com/mpkondrashin/ddan v0.0.3/go.mod h1:2ztiyFEkoqKql8aH1PCh5jRdKWnz8L2+2mm8/+0FTkY=
+github.com/mpkondrashin/ddan v0.0.4 h1:qaQNoFBjCM037/q0ZT2B6U3HEoHMr/Err2ZJeahNz5M=
+github.com/mpkondrashin/ddan v0.0.4/go.mod h1:2ztiyFEkoqKql8aH1PCh5jRdKWnz8L2+2mm8/+0FTkY=
 github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3ve8=
 github.com/pelletier/go-toml v1.9.5/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml/v2 v2.0.1 h1:8e3L2cCQzLFi2CR4g7vGFuFxX7Jl1kKX8gW+iV0GUKU=

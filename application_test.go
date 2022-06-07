@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -82,6 +83,46 @@ func prepairFolder(t *testing.T, baseFolder string) {
 	}
 }
 
+func prepairBigFolder(t *testing.T, baseFolder string) {
+	var layer func(string, int)
+	layer = func(base string, level int) {
+		for i := 0; i < 100; i++ {
+			fileName := fmt.Sprintf("%0X.dat", i)
+			filePath := filepath.Join(base, fileName)
+			f, err := os.Create(filePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = f.WriteString(".")
+			if err != nil {
+				t.Fatal(err)
+			}
+			f.Close()
+		}
+		if level == 0 {
+			return
+		}
+		for i := 0; i < 100; i++ {
+			folderName := fmt.Sprintf("%0X", i)
+			folderPath := filepath.Join(base, folderName)
+			err := os.MkdirAll(folderPath, 0o755)
+			if err != nil {
+				t.Fatal(err)
+			}
+			layer(folderPath, level-1)
+		}
+	}
+	err := os.RemoveAll(baseFolder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = os.MkdirAll(baseFolder, 0o755)
+	if err != nil {
+		t.Fatal(err)
+	}
+	layer(baseFolder, 1)
+}
+
 func TestApplication001(t *testing.T) {
 	baseFolder := "testing/t001"
 	prepairFolder(t, baseFolder)
@@ -117,6 +158,22 @@ func TestApplicationMaxFileSize(t *testing.T) {
 	analyzer, stop := analyzerMockupClient(t)
 	app := NewApplication(analyzer).SetPause(1 * time.Millisecond)
 	app.SetMaxFileSize(10)
+	err := app.ProcessFolder(baseFolder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stop()
+}
+
+func TestApplicationBigFolder(t *testing.T) {
+	baseFolder := "testing/big"
+	prepairBigFolder(t, baseFolder)
+	analyzer, stop := analyzerMockupClient(t)
+	app := NewApplication(analyzer).SetPause(1 * time.Millisecond)
+	for _, each := range verdictList {
+		app.SetAction(each, true)
+	}
+	app.SetAction("highRisk", false)
 	err := app.ProcessFolder(baseFolder)
 	if err != nil {
 		t.Fatal(err)
