@@ -16,6 +16,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/url"
@@ -90,7 +91,17 @@ func setupAnalyzer() (ddan.ClientInterace, error) {
 		return nil, err
 	}
 
-	analyzer := ddan.NewClient(productName, hostname)
+	ddanCachePath := "cache.db"
+	db, err := sql.Open("sqlite", ddanCachePath)
+	if err != nil {
+		panic(fmt.Errorf("%s: %w", ddanCachePath, err))
+	}
+	ddanCache, err := ddan.NewCache(db, ddanCachePath)
+	if err != nil {
+		panic(err)
+	}
+
+	analyzer := ddan.NewCachedClient(productName, hostname, ddanCache)
 
 	URL, err := url.Parse(viper.GetString("analyzer.url"))
 	if err != nil {
