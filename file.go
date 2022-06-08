@@ -1,7 +1,10 @@
 package main
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -22,6 +25,10 @@ type File struct {
 	Mime string
 }
 
+func (f *File) String() string {
+	return fmt.Sprintf("[%s] %s", f.Mime, f.Path)
+}
+
 func NewFile(path string) (*File, error) {
 	info, err := os.Lstat(path)
 	if err != nil {
@@ -40,6 +47,20 @@ func NewFileWithInfo(path string, info os.FileInfo) (*File, error) {
 		Info: info,
 		Mime: mime,
 	}, nil
+}
+
+// FileSHA1 - return SHA1 for file
+func (f *File) Sha1() (string, error) {
+	input, err := os.Open(f.Path)
+	if err != nil {
+		return "", err
+	}
+	hash := sha1.New()
+	_, err = io.Copy(hash, input)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
 /*

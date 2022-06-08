@@ -2,11 +2,8 @@ package main
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -33,7 +30,7 @@ type Application struct {
 	maxFileSize  int
 	jobs         int
 	filter       *Filter
-	tasks        chan string
+	tasks        chan *File
 	wg           sync.WaitGroup
 	returnCode   int32
 	pullInterval time.Duration
@@ -49,7 +46,7 @@ func NewApplication(analyzer ddan.ClientInterace) *Application {
 	return &Application{
 		analyzer:     analyzer,
 		maxFileSize:  50_000_000,
-		tasks:        make(chan string),
+		tasks:        make(chan *File),
 		pullInterval: 60 * time.Second,
 		accept:       make(map[string]bool),
 	}
@@ -110,7 +107,11 @@ func (a *Application) ProcessFolder(folder string) error {
 			start = time.Now()
 			log.Printf("Found %d files", count)
 		}
-		return a.ProcessFile(path, info)
+		file, err := NewFileWithInfo(path, info)
+		if err != nil {
+			return err
+		}
+		return a.ProcessFile(file)
 	})
 	if err != nil {
 		return err
@@ -125,44 +126,28 @@ func (a *Application) ProcessFolder(folder string) error {
 
 }
 
-/*
-func (a *Application) Ignore(path string) (matched bool, err error) {
-	for _, pattern := range a.ignore {
-		matched = fnmatch.Match(pattern, path, 0)
-		if matched {
-			return
-		}
-	}
-	return false, nil
-}
-|*/
-
-func (a *Application) ProcessFile(path string, info os.FileInfo) error {
+func (a *Application) ProcessFile(file *File) error {
 	//log.Printf("ProcessFile(%s)", path)
 	if a.filter != nil {
-		file, err := NewFileWithInfo(path, info)
-		if err != nil {
-			return err
-		}
 		submit, err := a.filter.CheckFile(file)
 		if err != nil {
 			log.Fatal(err)
 		}
 		if !submit {
-			log.Printf("Ignore: %s (%s)", path, file.Mime)
+			log.Printf("Ignore: %v", file)
 			return nil
 		}
 	}
-	if info.Size() > int64(a.maxFileSize) {
+	if file.Info.Size() > int64(a.maxFileSize) {
 		if !a.accept["bigFile"] {
-			log.Printf("Too big (%d) bytes file: %s", info.Size(), path)
+			log.Printf("Too big (%d) bytes file: %v", file.Info.Size(), file)
 			a.IncReturnCode()
 		} else {
-			log.Printf("Skip %d bytes file: %s", info.Size(), path)
+			log.Printf("Skip %d bytes file: %v", file.Info.Size(), file)
 		}
 		return nil
 	}
-	a.tasks <- path
+	a.tasks <- file
 	return nil
 }
 
@@ -176,20 +161,19 @@ func (a *Application) StartDispatchers() {
 
 func (a *Application) Dispatcher() {
 	defer a.wg.Done()
-	for path := range a.tasks {
-		if a.CheckFile(path) {
+	for file := range a.tasks {
+		if a.CheckFile(file) {
 			a.IncReturnCode()
 		}
 	}
 }
 
-func (a *Application) CheckFile(path string) bool {
-	log.Printf("CheckFile %s", path)
-	sha1, err := FileSHA1(path)
+func (a *Application) CheckFile(file *File) bool {
+	//log.Printf("CheckFile %s", path)
+	sha1, err := file.Sha1()
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	sha1List := []string{sha1}
 	duplicates, err := a.analyzer.CheckDuplicateSample(context.TODO(), sha1List, 0)
 	if err != nil {
@@ -197,17 +181,17 @@ func (a *Application) CheckFile(path string) bool {
 	}
 
 	if len(duplicates) == 0 || !strings.EqualFold(duplicates[0], sha1) {
-		err = a.analyzer.UploadSample(context.TODO(), path, sha1)
+		err = a.analyzer.UploadSample(context.TODO(), file.Path, sha1)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	log.Printf("Uploaded %s", path)
-	return a.WaitForResult(path, sha1)
+	log.Printf("Uploaded %v", file)
+	return a.WaitForResult(file, sha1)
 }
 
 // WaitForResult - wait for result from Analyzer for file defined by sha1
-func (a *Application) WaitForResult(path, sha1 string) bool {
+func (a *Application) WaitForResult(file *File, sha1 string) bool {
 	for {
 		sha1List := []string{sha1}
 		briefReport, err := a.analyzer.GetBriefReport(context.TODO(), sha1List)
@@ -218,7 +202,7 @@ func (a *Application) WaitForResult(path, sha1 string) bool {
 		//log.Printf("%s (%d): %v", path, count, report)
 		switch report.SampleStatus {
 		case ddan.StatusNotFound:
-			log.Fatalf("Not found by Analyzer: %v (%s)", sha1, path)
+			log.Fatalf("Not found by Analyzer: %s (%v)", sha1, file)
 		case ddan.StatusArrived:
 			a.SleepLong()
 			continue
@@ -228,18 +212,18 @@ func (a *Application) WaitForResult(path, sha1 string) bool {
 		case ddan.StatusError:
 			fallthrough
 		case ddan.StatusTimeout:
-			log.Printf("%v for %v", report.SampleStatus, path)
+			log.Printf("%v for %v", report.SampleStatus, file)
 			fallthrough
 		case ddan.StatusDone:
-			log.Printf("%v: %s", report.RiskLevel, path)
+			log.Printf("%v: %v", report.RiskLevel, file)
 			ok, err := a.Pass(report)
 			if err != nil {
-				log.Printf("%s: %s: %v", sha1, path, err)
+				log.Printf("%s: %v: %v", sha1, file, err)
 				return false
 			}
 			return ok
 		default:
-			log.Fatalf("%s: %s: Unexpected status value: %v", sha1, path, report.SampleStatus)
+			log.Fatalf("%s: %v: Unexpected status value: %v", sha1, file, report.SampleStatus)
 		}
 	}
 }
@@ -290,18 +274,4 @@ func (a *Application) SleepRandom(d time.Duration) {
 	time.Sleep(d)
 	//duration := rand.Int63n(int64(d / 2))
 	//time.Sleep(time.Duration(duration) + d/2)
-}
-
-// FileSHA1 - return SHA1 for file
-func FileSHA1(filePath string) (string, error) {
-	input, err := os.Open(filePath)
-	if err != nil {
-		return "", err
-	}
-	hash := sha1.New()
-	_, err = io.Copy(hash, input)
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(hash.Sum(nil)), nil
 }
