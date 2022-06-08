@@ -185,8 +185,10 @@ func (a *Application) CheckFile(file *File) bool {
 		if err != nil {
 			log.Fatal(err)
 		}
+		log.Printf("Uploaded %v", file)
+	} else {
+		log.Printf("Already uploaded %v", file)
 	}
-	log.Printf("Uploaded %v", file)
 	return a.WaitForResult(file, sha1)
 }
 
