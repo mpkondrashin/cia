@@ -34,10 +34,18 @@ func main() {
 
 	analyzer, err := setupAnalyzer()
 	app := NewApplication(analyzer)
-	app.SetIgnore(viper.GetStringSlice("ignore"))
 	app.SetJobs(viper.GetInt("analyzer.jobs"))
 	app.SetPause(viper.GetDuration("analyer.pullInterval"))
 	app.SetMaxFileSize(viper.GetInt("analyzer.maxFileSize"))
+
+	filterPath := viper.GetString("filter")
+	if filterPath != "" {
+		filter, err := LoadFilter(filterPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		app.SetFilter(filter)
+	}
 
 	for _, each := range verdictList {
 		app.SetAction(each, viper.GetBool("allow."+each))

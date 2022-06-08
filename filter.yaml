@@ -1,0 +1,10 @@
+rules:
+  - submit: true
+    type: mime
+    value: 'application/*zip'
+  - submit: true
+    type: mime
+    value: 'application/x*exe*'
+  - submit: true
+    type: mime
+    value: '*shellscript'	

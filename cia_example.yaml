@@ -18,8 +18,5 @@ allow:
   unscannable: true 
   timeout: true
   bigFile: true
-ignore:
-  - '*.txt'
-  - '*.tmp'
 folder: testing
   

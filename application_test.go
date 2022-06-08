@@ -139,6 +139,7 @@ func TestApplication001(t *testing.T) {
 	stop()
 }
 
+/*
 func TestApplicationIgnore(t *testing.T) {
 	baseFolder := "testing/t001"
 	prepairFolder(t, baseFolder)
@@ -150,7 +151,7 @@ func TestApplicationIgnore(t *testing.T) {
 		t.Fatal(err)
 	}
 	stop()
-}
+}*/
 
 func TestApplicationMaxFileSize(t *testing.T) {
 	baseFolder := "testing/t001"

@@ -15,8 +15,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/danwakefield/fnmatch"
-
 	"github.com/mpkondrashin/ddan"
 )
 
@@ -34,12 +32,17 @@ type Application struct {
 	analyzer     ddan.ClientInterace
 	maxFileSize  int
 	jobs         int
-	ignore       []string
+	filter       *Filter
 	tasks        chan string
 	wg           sync.WaitGroup
 	returnCode   int32
 	pullInterval time.Duration
 	accept       map[string]bool
+}
+
+func (a *Application) String() string {
+	return fmt.Sprintf("Application{%v; maxFileSize: %d; jobs: %d; filter: %v; pullInterval: %v; accept: %v}",
+		a.analyzer, a.maxFileSize, a.jobs, a.filter, a.pullInterval, a.accept)
 }
 
 func NewApplication(analyzer ddan.ClientInterace) *Application {
@@ -50,11 +53,6 @@ func NewApplication(analyzer ddan.ClientInterace) *Application {
 		pullInterval: 60 * time.Second,
 		accept:       make(map[string]bool),
 	}
-}
-
-func (a *Application) SetIgnore(ignore []string) *Application {
-	a.ignore = ignore
-	return a
 }
 
 func (a *Application) SetPause(pullInterval time.Duration) *Application {
@@ -74,6 +72,11 @@ func (a *Application) SetJobs(jobs int) *Application {
 
 func (a *Application) SetMaxFileSize(maxFileSize int) *Application {
 	a.maxFileSize = maxFileSize
+	return a
+}
+
+func (a *Application) SetFilter(filter *Filter) *Application {
+	a.filter = filter
 	return a
 }
 
@@ -122,6 +125,7 @@ func (a *Application) ProcessFolder(folder string) error {
 
 }
 
+/*
 func (a *Application) Ignore(path string) (matched bool, err error) {
 	for _, pattern := range a.ignore {
 		matched = fnmatch.Match(pattern, path, 0)
@@ -131,16 +135,23 @@ func (a *Application) Ignore(path string) (matched bool, err error) {
 	}
 	return false, nil
 }
+|*/
 
 func (a *Application) ProcessFile(path string, info os.FileInfo) error {
-	log.Printf("ProcessFile(%s)", path)
-	matched, err := a.Ignore(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if matched {
-		log.Printf("Ignore: %s", path)
-		return nil
+	//log.Printf("ProcessFile(%s)", path)
+	if a.filter != nil {
+		file, err := NewFileWithInfo(path, info)
+		if err != nil {
+			return err
+		}
+		submit, err := a.filter.CheckFile(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if !submit {
+			log.Printf("Ignore: %s (%s)", path, file.Mime)
+			return nil
+		}
 	}
 	if info.Size() > int64(a.maxFileSize) {
 		if !a.accept["bigFile"] {
