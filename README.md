@@ -14,11 +14,11 @@ CIA provides ability to thoroughly check each file using cutting edge Trend Micr
 
 CIA has two features to speedup checks by avoiding unnessesary files checks
 
-#### - Flexible Prefiltering
+#### &bull; Flexible Prefiltering
 
 True file type and file path flexible rule based system to avoid submitting unnessesory files to analysis
 
-#### - Caching
+#### &bull; Caching
 
 Previous checks are chached to enomerously speed up sucential checks if only small portion of files are changed between the runs.
 
