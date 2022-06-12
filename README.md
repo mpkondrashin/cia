@@ -6,11 +6,11 @@ Check all files in given folder using Trend Micro Deep Discovery Analyzer
 
 ## Key Features
 
-### Integration with Trend Micro Deep Discovery Analyzer
+### &ofcir; Integration with Trend Micro Deep Discovery Analyzer
 
 CIA provides ability to thoroughly check each file using cutting edge Trend Micro sandbox technology
 
-### Fast Folder Checks
+### &ofcir; Fast Folder Checks
 
 #### Flexible Prefiltering
 
@@ -20,7 +20,7 @@ True file type and file path flexible rule based system to avoid submitting unne
 
 Previous checks are chached to enomerously speed up sucential checks if only small portion of files are changed between the runs.
 
-### Configurable theshhold for file safety confidence
+### &ofcir; Configurable theshhold for file safety confidence
 
 Each analysis result can be configarables separatly as acceptable or not
 
