@@ -30,14 +30,18 @@ Each analysis result can be configured separatly as acceptable or not
 
 ```yaml
 analyzer:
-  url: 10.0.0.1:443 # IP:Port of the analyer
+  url: 10.0.0.1:443                               # IP and port of the analyer
   apiKey: 00000000-0000-0000-0000-000000000000    # Check Help->About Analyser 
                                                   # web GUI for correct value
   maxFileSize: 60000000                           # Maxinum file size. It can
                                                   # not be bigger then configured
                                                   # in Analyzer iteslf
-  jobs: 1 # How many parallel checks to run. Should reflect nubmer os sandboxes in Analyzer
-  pullInterval: 60s # How often to check analyzer for results. Lower values will result more request per minute to analyzer.
+  jobs: 10                                        # How many parallel checks to run.
+                                                  # Should reflect nubmer os sandboxes
+                                                  # in Analyzer
+  pullInterval: 60s                               # How often to check analyzer for
+                                                  # results. Lower values will result
+                                                  # more request per minute to analyzer.
   ignoreTLSError: True # (default - false). Set True if you have incorrect certificate set on your Analyzer
   productName: cia # What product name to display in Analyzer Web GUI Submission->Submitters. Do not change! 
   sourceID: 500 # number of the product. Do not change!
