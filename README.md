@@ -10,17 +10,19 @@ Check all files in given folder using Trend Micro Deep Discovery Analyzer
 
 CIA provides ability to thoroughly check each file using cutting edge Trend Micro sandbox technology
 
-### &ofcir; Fast Folder Checks
+### &#x261E; Fast Folder Checks
 
-#### Flexible Prefiltering
+CIA has two features to speedup checks by avoiding unnessesary files checks
+
+#### - Flexible Prefiltering
 
 True file type and file path flexible rule based system to avoid submitting unnessesory files to analysis
 
-#### Caching
+#### - Caching
 
 Previous checks are chached to enomerously speed up sucential checks if only small portion of files are changed between the runs.
 
-### &#x261A; Configurable theshhold for file safety confidence
+### &#x261E; Configurable theshhold for file safety confidence
 
 Each analysis result can be configarables separatly as acceptable or not
 
