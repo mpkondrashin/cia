@@ -28,9 +28,11 @@ var verdictList = [...]string{
 type Application struct {
 	analyzer     ddan.ClientInterace
 	maxFileSize  int
-	jobs         int
+	prescanJobs  int
+	submitJobs   int
 	filter       *Filter
-	tasks        chan *File
+	prescan      chan *File
+	submit       chan *File
 	wg           sync.WaitGroup
 	returnCode   int32
 	pullInterval time.Duration
@@ -39,14 +41,15 @@ type Application struct {
 
 func (a *Application) String() string {
 	return fmt.Sprintf("Application{%v; maxFileSize: %d; jobs: %d; filter: %v; pullInterval: %v; accept: %v}",
-		a.analyzer, a.maxFileSize, a.jobs, a.filter, a.pullInterval, a.accept)
+		a.analyzer, a.maxFileSize, a.submitJobs, a.filter, a.pullInterval, a.accept)
 }
 
 func NewApplication(analyzer ddan.ClientInterace) *Application {
 	return &Application{
 		analyzer:     analyzer,
 		maxFileSize:  50_000_000,
-		tasks:        make(chan *File),
+		prescan:      make(chan *File),
+		submit:       make(chan *File),
 		pullInterval: 60 * time.Second,
 		accept:       make(map[string]bool),
 	}
@@ -62,8 +65,13 @@ func (a *Application) SetAction(actionName string, pass bool) *Application {
 	return a
 }
 
-func (a *Application) SetJobs(jobs int) *Application {
-	a.jobs = jobs
+func (a *Application) SetPrescanJobs(jobs int) *Application {
+	a.prescanJobs = jobs
+	return a
+}
+
+func (a *Application) SetSubmitJobs(jobs int) *Application {
+	a.submitJobs = jobs
 	return a
 }
 
@@ -93,7 +101,7 @@ func (a *Application) ProcessFolder(folder string) error {
 	}
 	a.StartDispatchers()
 	log.Printf("Process folder: %s", folder)
-	start := time.Now()
+	//start := time.Now()
 	count := 0
 	err = filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -103,21 +111,22 @@ func (a *Application) ProcessFolder(folder string) error {
 			return nil
 		}
 		count++
-		if start.After(time.Now().Add(10 * time.Second)) {
-			start = time.Now()
-			log.Printf("Found %d files", count)
-		}
+		//	if start.After(time.Now().Add(10 * time.Second)) {
+		//		start = time.Now()
+		//		log.Printf("Found %d files", count)
+		//	}
 		file, err := NewFileWithInfo(path, info)
 		if err != nil {
 			return err
 		}
-		return a.ProcessFile(file)
+		a.prescan <- file
+		return nil
 	})
 	if err != nil {
 		return err
 	}
 	log.Printf("Scan complete. Found %d files. Waiting for analysis results", count)
-	close(a.tasks)
+	close(a.submit)
 	a.wg.Wait()
 	if a.returnCode > 0 {
 		err = fmt.Errorf("Found %d inadmissible files", a.returnCode)
@@ -125,8 +134,28 @@ func (a *Application) ProcessFolder(folder string) error {
 	return nil
 }
 
-func (a *Application) ProcessFile(file *File) error {
-	//log.Printf("ProcessFile(%v)", file)
+func (a *Application) StartDispatchers() {
+	log.Print("StartSubmissionDispatchers")
+	a.wg.Add(a.submitJobs)
+	for i := 0; i < a.submitJobs; i++ {
+		log.Print("Start submission")
+		go a.SubmissionDispatcher()
+	}
+	log.Print("StartPrescanDispatchers")
+	for i := 0; i < a.prescanJobs; i++ {
+		log.Print("Start prescan")
+		go a.PrescanDispatcher()
+	}
+}
+
+func (a *Application) PrescanDispatcher() {
+	log.Print("Start PrescanDispatcher")
+	for file := range a.prescan {
+		a.PrescanFile(file)
+	}
+}
+
+func (a *Application) PrescanFile(file *File) {
 	if a.filter != nil {
 		submit, err := a.filter.CheckFile(file)
 		if err != nil {
@@ -134,7 +163,7 @@ func (a *Application) ProcessFile(file *File) error {
 		}
 		if !submit {
 			log.Printf("Ignore: %v", file)
-			return nil
+			return
 		}
 	}
 	if file.Info.Size() > int64(a.maxFileSize) {
@@ -144,23 +173,14 @@ func (a *Application) ProcessFile(file *File) error {
 		} else {
 			log.Printf("Skip %d bytes file: %v", file.Info.Size(), file)
 		}
-		return nil
+		return
 	}
-	a.tasks <- file
-	return nil
+	a.submit <- file
 }
 
-func (a *Application) StartDispatchers() {
-	tasks := 10
-	a.wg.Add(tasks)
-	for i := 0; i < tasks; i++ {
-		go a.Dispatcher()
-	}
-}
-
-func (a *Application) Dispatcher() {
+func (a *Application) SubmissionDispatcher() {
 	defer a.wg.Done()
-	for file := range a.tasks {
+	for file := range a.submit {
 		if a.CheckFile(file) {
 			a.IncReturnCode()
 		}
