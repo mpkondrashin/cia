@@ -26,11 +26,15 @@ Previous checks are chached to enomerously speed up sucential checks if only sma
 
 Each analysis result can be configured separatly as acceptable or not
 
-## Configuration File
+## Configuration Files
+
+### cia.yaml
+
+Main CIA configuration file
 
 ```yaml
 analyzer:
-  url: http://10.0.0.1:443                               # IP and port of the analyer
+  url: http://10.0.0.1:443                        # IP and port of the analyer
 
   apiKey: 00000000-0000-0000-0000-000000000000    # Check Help->About Analyser 
                                                   # web GUI for correct value
@@ -98,8 +102,30 @@ allow:
 
   bigFile: true                                   # Allow files bigger then maxFileSize
 
-filter: filter.yaml                               # path to the filter file
+filter: filter.yaml                               # path to the prefiltering rules file
 
 folder: <folder>                                  # name of the folder to check
 ```
+### filters.yaml
 
+Configuration of prefiltering rules
+
+```yaml
+rules:
+  - submit: true                                  # Submit matching file (**true**) or not (**false**)
+    type: path                                    # type of rule. **path** for file path rules 
+    value: '*.txt'                                # mask for file name
+  - submit: true
+    type: mime                                    # type of rule. **mime** for true file type rules 
+    value: 'application/*zip'                     # mask for MIME type
+  - submit: true
+    type: mime
+    value: 'application/x*exe*'
+  - submit: true
+    type: mime
+    value: '*shellscript'	
+```
+
+Rules are applied in order of appearance in this file. First rules that matches file is applied
+(decision is made to submit file for analysis or not). If non of the rules matches, default action
+is **no to submit file**.
