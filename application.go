@@ -184,6 +184,7 @@ func (a *Application) SubmissionDispatcher() {
 	defer a.submitWg.Done()
 	for file := range a.submit {
 		if a.CheckFile(file) {
+			log.Printf("INC %v", file)
 			a.IncReturnCode()
 		}
 	}
