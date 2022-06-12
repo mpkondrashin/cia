@@ -8,7 +8,7 @@ Check all files in given folder using Trend Micro Deep Discovery Analyzer
 
 ### Integration with Trend Micro Deep Discovery Analyzer
 
-CIA can 000 check each file using cutting edge Trend Micro sandbox technology
+CIA provides ability to thoroughly check each file using cutting edge Trend Micro sandbox technology
 
 ### Fast Folder Checks
 
@@ -18,11 +18,7 @@ True file type and file path flexible rule based system to avoid submitting unne
 
 #### Caching
 
-Previous checks are chached to to enomerously speed up sucential checks if only small portion of files are chenged between the runs.
-
-Two industry best SQL databases are supported:
-- SQLite to store cache in local file
-- PostreSQL to use persistent network storage
+Previous checks are chached to enomerously speed up sucential checks if only small portion of files are changed between the runs.
 
 ### Configurable theshhold for file safety confidence
 
