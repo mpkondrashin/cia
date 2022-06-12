@@ -183,7 +183,7 @@ func (a *Application) PrescanFile(file *File) {
 func (a *Application) SubmissionDispatcher() {
 	defer a.submitWg.Done()
 	for file := range a.submit {
-		if a.CheckFile(file) {
+		if !a.CheckFile(file) {
 			log.Printf("INC %v", file)
 			a.IncReturnCode()
 		}
@@ -257,7 +257,6 @@ func (a *Application) Pass(b ddan.BriefReport) bool { // (bool, error) {
 	switch b.SampleStatus {
 	case ddan.StatusNotFound, ddan.StatusArrived, ddan.StatusProcessing:
 		log.Fatal(ddan.NotReadyError(ddan.StatusCodeNames[b.SampleStatus]))
-		return true //, nil
 	case ddan.StatusDone:
 		switch b.RiskLevel {
 		case ddan.RatingUnsupported:
