@@ -3,13 +3,21 @@ analyzer:
   url: https://10.0.0.10
   apiKey: c7213f09-b399-4c71-9d1c-3a99905215e9
   maxFileSize: 60000000
-  jobs: 100
+  prescanJobs: 3
+  submitJobs: 3
   pullInterval: 60s
   ignoreTLSError: True
   productName: cia
   sourceID: 500
   sourceName: pipeline
   clientUUID: c7213f09-b399-4c71-9d1c-3a99905215e0
+cache:
+  type: postgres
+  host: 135.181.111.163
+  port: 5432
+  username: postgres
+  password: password
+  dbname: cia
 allow:
   highRisk: false
   mediumRisk: false
@@ -18,5 +26,8 @@ allow:
   unscannable: true 
   timeout: true
   bigFile: true
+filter: filter.yaml
+skip:
+  - /proc
 folder: testing
   
