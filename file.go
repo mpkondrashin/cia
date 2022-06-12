@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
+	"strings"
 )
 
 //const HeaderSize = 216
@@ -22,11 +24,15 @@ type File struct {
 	Path string
 	//	header Header
 	Info os.FileInfo
-	Mime string
+	mime string
 }
 
 func (f *File) String() string {
-	return fmt.Sprintf("[%s] %s", f.Mime, f.Path)
+	mime, err := f.Mime()
+	if err != nil {
+		mime = err.Error()
+	}
+	return fmt.Sprintf("[%s] %s", mime, f.Path)
 }
 
 func NewFile(path string) (*File, error) {
@@ -34,19 +40,31 @@ func NewFile(path string) (*File, error) {
 	if err != nil {
 		return nil, fmt.Errorf("lstat: %w", err)
 	}
-	return NewFileWithInfo(path, info)
+	return NewFileWithInfo(path, info), nil
 }
 
-func NewFileWithInfo(path string, info os.FileInfo) (*File, error) {
-	mime, err := MimeType(path)
-	if err != nil {
-		return nil, err
-	}
+func NewFileWithInfo(path string, info os.FileInfo) *File {
+	//mime, err := MimeType(path)
+	//if err != nil {
+	//	return nil, err
+	//}
 	return &File{
 		Path: path,
 		Info: info,
-		Mime: mime,
-	}, nil
+		mime: "",
+	}
+}
+func (f *File) Mime() (string, error) {
+	if f.mime == "" {
+		options := []string{"--mime-type", "--brief", f.Path}
+		cmd := exec.Command("file", options...)
+		output, err := cmd.Output()
+		if err != nil {
+			return "", fmt.Errorf("%s %v: %w", "file", options, err)
+		}
+		f.mime = strings.TrimRight(string(output), "\n")
+	}
+	return f.mime, nil
 }
 
 // FileSHA1 - return SHA1 for file

@@ -32,8 +32,9 @@ type Application struct {
 	submitJobs   int
 	filter       *Filter
 	prescan      chan *File
+	prescanWg    sync.WaitGroup
 	submit       chan *File
-	wg           sync.WaitGroup
+	submitWg     sync.WaitGroup
 	returnCode   int32
 	pullInterval time.Duration
 	accept       map[string]bool
@@ -115,10 +116,7 @@ func (a *Application) ProcessFolder(folder string) error {
 		//		start = time.Now()
 		//		log.Printf("Found %d files", count)
 		//	}
-		file, err := NewFileWithInfo(path, info)
-		if err != nil {
-			return err
-		}
+		file := NewFileWithInfo(path, info)
 		a.prescan <- file
 		return nil
 	})
@@ -126,8 +124,10 @@ func (a *Application) ProcessFolder(folder string) error {
 		return err
 	}
 	log.Printf("Scan complete. Found %d files. Waiting for analysis results", count)
+	close(a.prescan)
+	a.prescanWg.Wait()
 	close(a.submit)
-	a.wg.Wait()
+	a.submitWg.Wait()
 	if a.returnCode > 0 {
 		err = fmt.Errorf("Found %d inadmissible files", a.returnCode)
 	}
@@ -135,21 +135,23 @@ func (a *Application) ProcessFolder(folder string) error {
 }
 
 func (a *Application) StartDispatchers() {
-	log.Print("StartSubmissionDispatchers")
-	a.wg.Add(a.submitJobs)
+	//log.Print("StartSubmissionDispatchers")
+	a.submitWg.Add(a.submitJobs)
 	for i := 0; i < a.submitJobs; i++ {
-		log.Print("Start submission")
+		//log.Print("Start submission")
 		go a.SubmissionDispatcher()
 	}
-	log.Print("StartPrescanDispatchers")
+	//log.Print("StartPrescanDispatchers")
+	a.prescanWg.Add(a.prescanJobs)
 	for i := 0; i < a.prescanJobs; i++ {
-		log.Print("Start prescan")
+		//log.Print("Start prescan")
 		go a.PrescanDispatcher()
 	}
 }
 
 func (a *Application) PrescanDispatcher() {
-	log.Print("Start PrescanDispatcher")
+	defer a.prescanWg.Done()
+	//log.Print("Start PrescanDispatcher")
 	for file := range a.prescan {
 		a.PrescanFile(file)
 	}
@@ -179,7 +181,7 @@ func (a *Application) PrescanFile(file *File) {
 }
 
 func (a *Application) SubmissionDispatcher() {
-	defer a.wg.Done()
+	defer a.submitWg.Done()
 	for file := range a.submit {
 		if a.CheckFile(file) {
 			a.IncReturnCode()

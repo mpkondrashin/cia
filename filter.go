@@ -42,7 +42,11 @@ func (r *Rule) ShouldSubmit(f *File) (bool, error) {
 			return r.Submit, nil
 		}
 	case "mime":
-		if fnmatch.Match(r.Value, f.Mime, 0) {
+		mime, err := f.Mime()
+		if err != nil {
+			return false, err
+		}
+		if fnmatch.Match(r.Value, mime, 0) {
 			return r.Submit, nil
 		}
 	default:
