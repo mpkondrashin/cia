@@ -126,7 +126,7 @@ func (a *Application) ProcessFolder(folder string) error {
 }
 
 func (a *Application) ProcessFile(file *File) error {
-	//log.Printf("ProcessFile(%s)", path)
+	log.Printf("ProcessFile(%v)", file)
 	if a.filter != nil {
 		submit, err := a.filter.CheckFile(file)
 		if err != nil {

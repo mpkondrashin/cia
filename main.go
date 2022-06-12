@@ -210,7 +210,8 @@ func createPostgreDatabase(pURL *PostgresURL) {
 			log.Fatalf("%v: Close: %v", pURL, err)
 		}
 	}()
-	_, err = db.Exec("CREATE DATABASE " + pURL.dbname)
+	execStmt := fmt.Sprintf("CREATE DATABASE \"%s\"", pURL.dbname)
+	_, err = db.Exec(execStmt)
 	if err != nil {
 		if !strings.Contains(err.Error(), "already exists") {
 			log.Fatalf("%v: CREATE DATABASE: %v", pURL, err)
