@@ -243,12 +243,12 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 			fallthrough
 		case ddan.StatusDone:
 			log.Printf("%v: %v", report.RiskLevel, file)
-			return a.Pass(report)
-			//if err != nil {
-			//	log.Printf("%s: %v: %v", sha1, file, err)
-			//	return false
-			//}
-			//return ok
+			ok, err := a.Pass(report)
+			if err != nil {
+				log.Printf("%s: %v: %v", sha1, file, err)
+				return false
+			}
+			return ok
 		default:
 			log.Fatalf("%s: %v: Unexpected status value: %v", sha1, file, report.SampleStatus)
 		}
@@ -256,32 +256,32 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 }
 
 // Pass - return whenever file should be accepted to pass
-func (a *Application) Pass(b ddan.BriefReport) bool { // (bool, error) {
+func (a *Application) Pass(b ddan.BriefReport) (bool, error) {
 	switch b.SampleStatus {
 	case ddan.StatusNotFound, ddan.StatusArrived, ddan.StatusProcessing:
 		log.Fatal(ddan.NotReadyError(ddan.StatusCodeNames[b.SampleStatus]))
 	case ddan.StatusDone:
 		switch b.RiskLevel {
 		case ddan.RatingUnsupported:
-			return a.accept["unscannable"] //, nil
+			return a.accept["unscannable"], nil
 		case ddan.RatingNoRiskFound:
-			return true //, nil
+			return true, nil
 		case ddan.RatingLowRisk:
-			return a.accept["lowRisk"] //, nil
+			return a.accept["lowRisk"], nil
 		case ddan.RatingMediumRisk:
-			return a.accept["mediumRisk"] //, nil
+			return a.accept["mediumRisk"], nil
 		case ddan.RatingHighRisk:
-			return a.accept["highRisk"] //, nil
+			return a.accept["highRisk"], nil
 		default:
-			log.Fatalf("Unknown RiskLevel: %d", b.RiskLevel)
-			//return false, fmt.Errorf("Unknown RiskLevel: %v", b)
+			//log.Fatalf("Unknown RiskLevel: %d", b.RiskLevel)
+			return false, fmt.Errorf("Unknown RiskLevel: %v", b)
 		}
 	case ddan.StatusError:
-		return a.accept["error"] //, nil
+		return a.accept["error"], nil
 	case ddan.StatusTimeout:
-		return a.accept["timeout"] //, nil
+		return a.accept["timeout"], nil
 	}
-	return false //, nil
+	return false, nil
 }
 
 // SleepLong - sleep for long when file is still in the queue
