@@ -30,7 +30,7 @@ func LoadFilter(filePath string) (*Filter, error) {
 	var filter Filter
 	err = yaml.UnmarshalStrict(yamlData, &filter)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", filePath, err)
 	}
 	return &filter, nil
 }

@@ -123,7 +123,6 @@ func (a *Application) ProcessFolder(folder string) error {
 		err = fmt.Errorf("Found %d inadmissible files", a.returnCode)
 	}
 	return nil
-
 }
 
 func (a *Application) ProcessFile(file *File) error {
