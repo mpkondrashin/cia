@@ -38,6 +38,7 @@ type Application struct {
 	returnCode   int32
 	pullInterval time.Duration
 	accept       map[string]bool
+	skipFolders  []string
 }
 
 func (a *Application) String() string {
@@ -86,6 +87,11 @@ func (a *Application) SetFilter(filter *Filter) *Application {
 	return a
 }
 
+func (a *Application) SetSkipFolders(skipFolders []string) *Application {
+	a.skipFolders = skipFolders
+	return a
+}
+
 func (a *Application) IncReturnCode() {
 	_ = atomic.AddInt32(&a.returnCode, 1)
 }
@@ -110,6 +116,9 @@ func (a *Application) ProcessFolder(folder string) error {
 			return err
 		}
 		if info.IsDir() {
+			if a.ShouldSkipFolder(path) {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 		count++
@@ -135,6 +144,15 @@ func (a *Application) ProcessFolder(folder string) error {
 		return fmt.Errorf("Found %d inadmissible files", a.returnCode)
 	}
 	return nil
+}
+
+func (a *Application) ShouldSkipFolder(folder string) bool {
+	for _, each := range a.skipFolders {
+		if strings.HasPrefix(folder, each) {
+			return true
+		}
+	}
+	return false
 }
 
 func (a *Application) StartDispatchers() {
