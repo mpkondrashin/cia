@@ -129,7 +129,7 @@ func (a *Application) ProcessFolder(folder string) error {
 	close(a.submit)
 	a.submitWg.Wait()
 	if a.returnCode > 0 {
-		err = fmt.Errorf("Found %d inadmissible files", a.returnCode)
+		return fmt.Errorf("Found %d inadmissible files", a.returnCode)
 	}
 	return nil
 }
