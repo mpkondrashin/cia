@@ -91,6 +91,7 @@ func (a *Application) IncReturnCode() {
 }
 
 func (a *Application) ProcessFolder(folder string) error {
+	startTime := time.Now()
 	log.Print(a)
 	err := a.analyzer.Register(context.TODO())
 	if err != nil {
@@ -128,6 +129,8 @@ func (a *Application) ProcessFolder(folder string) error {
 	a.prescanWg.Wait()
 	close(a.submit)
 	a.submitWg.Wait()
+	duration := time.Since(startTime)
+	log.Printf("Operation time: %v", duration)
 	if a.returnCode > 0 {
 		return fmt.Errorf("Found %d inadmissible files", a.returnCode)
 	}
@@ -184,7 +187,7 @@ func (a *Application) SubmissionDispatcher() {
 	defer a.submitWg.Done()
 	for file := range a.submit {
 		if !a.CheckFile(file) {
-			log.Printf("INC %v", file)
+			//	log.Printf("INC %v", file)
 			a.IncReturnCode()
 		}
 	}
