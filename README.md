@@ -24,16 +24,19 @@ Previous checks are chached to enomerously speed up sucential checks if only sma
 
 ### &#x261E; Configurable theshhold for file safety confidence
 
-Each analysis result can be configarables separatly as acceptable or not
+Each analysis result can be configured separatly as acceptable or not
 
 ## Configuration File
 
 ```yaml
 analyzer:
   url: 10.0.0.1:443 # IP:Port of the analyer
-  apiKey: 00000000-0000-0000-0000-000000000000 # Check Help->About Analyser web GUI for correct value
-  maxFileSize: 60000000 # Maxinum file size. It can not be bigger then configured in Analyzer iteslf
-  jobs: 1 # How many parallel checks to run. Showl reflect nubmer os sandboxes in Analyzer
+  apiKey: 00000000-0000-0000-0000-000000000000    # Check Help->About Analyser 
+                                                  # web GUI for correct value
+  maxFileSize: 60000000                           # Maxinum file size. It can
+                                                  # not be bigger then configured
+                                                  # in Analyzer iteslf
+  jobs: 1 # How many parallel checks to run. Should reflect nubmer os sandboxes in Analyzer
   pullInterval: 60s # How often to check analyzer for results. Lower values will result more request per minute to analyzer.
   ignoreTLSError: True # (default - false). Set True if you have incorrect certificate set on your Analyzer
   productName: cia # What product name to display in Analyzer Web GUI Submission->Submitters. Do not change! 
