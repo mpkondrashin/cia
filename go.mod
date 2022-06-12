@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964
-	github.com/mpkondrashin/ddan v0.0.18
+	github.com/mpkondrashin/ddan v0.0.19
 	github.com/spf13/viper v1.12.0
 )
 
