@@ -13,6 +13,9 @@ jobs:
         uses: actions/setup-go@v2
       - name: Check Go version
         run: go version
+      - run: echo $DDAN_GH_REPO_TOKEN
+      - run: echo ${{ secrets.GH_ACCESS_TOKEN }}
+      - run: echo $GH_ACCESS_TOKEN
       - run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
       - id: get_version
         uses: battila7/get-version-action@v2
