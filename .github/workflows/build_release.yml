@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOPRIVATE: github.com/mpkondrashin/ddan
-      DDAN_GH_REPO_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+      DDAN_GH_REPO_TOKEN: ${{ secrets.DDAN_GH_REPO_TOKEN }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -15,9 +15,9 @@ jobs:
         run: go version
       - run: go env -w GOPRIVATE=github.com/mpkondrashin/ddan
       - run: echo $DDAN_GH_REPO_TOKEN
-      - run: echo ${{ secrets.GH_ACCESS_TOKEN }}
+      - run: echo ${{ secrets.DDAN_GH_REPO_TOKEN }}
       - run: echo $GH_ACCESS_TOKEN
-      - run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
+      - run: git config --global url.https://$DDAN_GH_REPO_TOKEN@github.com/.insteadOf https://github.com/
       - id: get_version
         uses: battila7/get-version-action@v2
       - run: echo ${{ steps.get_version.outputs.version }}
