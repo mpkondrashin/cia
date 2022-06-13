@@ -66,7 +66,7 @@ Main CIA configuration file
 
 ```yaml
 analyzer:
-  url: http://10.0.0.1:443                        # IP and port of the analyer
+  url: http://10.0.0.1:443                        # IP or DNS name and port of the analyer
 
   apiKey: 00000000-0000-0000-0000-000000000000    # Check Help->About Analyser 
                                                   # web GUI for correct value
@@ -107,7 +107,7 @@ analyzer:
 cache:
   type: postgres                                  # The only option supported
 
-  host: 135.181.111.163                           # Address of PostreSQL server
+  host: 10.0.0.100                                # IP or DNS name of PostreSQL server
 
   port: 5432                                      # (default - 5432) Port of PostreSQL server
 
