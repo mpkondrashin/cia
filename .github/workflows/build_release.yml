@@ -13,6 +13,7 @@ jobs:
         uses: actions/setup-go@v2
       - name: Check Go version
         run: go version
+      - run: go env -w GOPRIVATE=github.com/mpkondrashin/ddan
       - run: echo $DDAN_GH_REPO_TOKEN
       - run: echo ${{ secrets.GH_ACCESS_TOKEN }}
       - run: echo $GH_ACCESS_TOKEN
