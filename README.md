@@ -138,8 +138,6 @@ Download binary from releases or download sources and build it yourself:
 git clone https://github.com/mpkondrashin/cia.git
 cd cia
 go build
-cp filters_example.yaml filters.yaml
-cp cia_example.yaml cia.yaml
 ```
 **Note** you need to have permission to have access to private repository https://github.com/mpkondrashin/ddan.
 
@@ -152,3 +150,10 @@ And edit cia.yaml amd filters.yaml files to suite your needs. Then run
 ```commandline
 ./cia
 ```
+
+## Return code
+If CIA finds any malicious file according to its configuration or faces some error during files scan, it returns non zero return code and zero otherwise.
+
+## Logging
+
+CIA writes its log to stderr and it can be redirected to any file required.
