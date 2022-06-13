@@ -13,10 +13,10 @@ jobs:
         uses: actions/setup-go@v2
       - name: Check Go version
         run: go version
-      - run: go env -w GOPRIVATE=github.com/mpkondrashin/ddan
-      - run: echo $DDAN_GH_REPO_TOKEN
-      - run: echo ${{ secrets.DDAN_GH_REPO_TOKEN }}
-      - run: echo $GH_ACCESS_TOKEN
+ #     - run: go env -w GOPRIVATE=github.com/mpkondrashin/ddan
+ #     - run: echo $DDAN_GH_REPO_TOKEN
+ #     - run: echo ${{ secrets.DDAN_GH_REPO_TOKEN }}
+ #     - run: echo $GH_ACCESS_TOKEN
       - run: git config --global url.https://$DDAN_GH_REPO_TOKEN@github.com/.insteadOf https://github.com/
       - id: get_version
         uses: battila7/get-version-action@v2
@@ -27,7 +27,7 @@ jobs:
       - name: Build
         run: go build
       - name: Pack release
-        run: tar cfvz cia.tgz cia README.md cia_example.yaml filters_example.yaml
+        run: tar cfvz cia.tgz cia README.md cia_example.yaml filter_example.yaml
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
