@@ -10,11 +10,11 @@ CIA provides ability to thoroughly check each file using cutting edge [Trend Mic
 
 ### &#x261E; Fast Folder Checks
 
-CIA has two features to speedup checks by avoiding unnessesary files checks:
+CIA provides two features to speedup checks by avoiding unnessesary files checks:
 
 #### &bull; Flexible Prefiltering
 
-True file type and file path flexible rule based system to avoid submitting unnecessary files for analysis
+True file type and file path flexible rule based system to avoid unnecessary submittions of files for analysis
 
 #### &bull; Caching
 
@@ -22,7 +22,7 @@ All checks results are chached to enomerously speed up subsequent checks provide
 
 ### &#x261E; Configurable theshhold for file safety confidence
 
-Each analysis result can be configured separatly as acceptable or not
+Each analysis outcome can be configured separatly as acceptable or not
 
 
 ## Installation
