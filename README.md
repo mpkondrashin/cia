@@ -137,6 +137,9 @@ allow:
 filter: filter.yaml                               # path to the prefiltering rules file
 
 folder: <folder>                                  # name of the folder to check
+
+skip:                                             # list of scanned paths prefixes to skip
+  - /proc
 ```
 ### filters.yaml
 
