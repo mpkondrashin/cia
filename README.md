@@ -112,8 +112,8 @@ Configuration of prefiltering rules
 
 ```yaml
 rules:
-  - submit: true                                  # Submit matching file (**true**) or not (**false**)
-    type: path                                    # type of rule. **path** for file path rules 
+  - submit: true                                  # Submit matching file (true) or not (false)
+    type: path                                    # type of rule. path for file path rules 
     value: '*.txt'                                # mask for file name
   - submit: true
     type: mime                                    # type of rule. **mime** for true file type rules 
@@ -129,3 +129,21 @@ rules:
 Rules are applied in order of appearance in this file. First rules that matches file is applied
 (decision is made to submit file for analysis or not). If non of the rules matches, default action
 is **no to submit file**.
+
+## Installation
+
+Download binary from releases or download sources and build it yourself:
+
+```commandline
+git clone https://github.com/mpkondrashin/cia.git
+cd cia
+go build
+cp filters_example.yaml filters.yaml
+cp cia_example.yaml cia.yaml
+```
+**Note** you need to have permission to have access to private repository https://github.com/mpkondrashin/ddan.
+
+Edit cia.yaml amd filters.yaml files to suite your needs. Then run
+```commandline
+./cia
+```
