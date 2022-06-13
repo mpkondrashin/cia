@@ -39,7 +39,7 @@ tiny.c:      text/x-c
 win32.exe:   application/x-dosexec
 */
 
-func TestLoadFilter(t *testing.T) {
+func TestFilterLoad(t *testing.T) {
 	testingFolder := "testing_filter"
 	/*	err := os.MkdirAll(testingFolder, 0o755)
 		if err != nil {
@@ -86,47 +86,6 @@ func TestLoadFilter(t *testing.T) {
 	checkFile("tiny.c", false)
 }
 
-/*
-func TestFileHeader(t *testing.T) {
-	testingFolder := "testing_filter"
-	err := os.MkdirAll(testingFolder, 0o755)
-	if err != nil {
-		t.Fatal(err)
-	}
-	fileName := "read_header.txt"
-	filePath := filepath.Join(testingFolder, fileName)
-	f, err := os.Create(filePath)
-	if err != nil {
-		t.Fatal(t)
-	}
-	for i := 0; i < 216; i++ {
-		f.WriteString("0")
-	}
-	for i := 0; i < 10; i++ {
-		f.WriteString("1")
-	}
-	f.Close()
-
-		file := NewFile(filePath)
-		header, err := file.Header()
-		if err != nil {
-			t.Fatal(err)
-		}
-		actualInt := len(header)
-		expectedInt := 216
-		if expectedInt != actualInt {
-			t.Errorf("Expected %d but got %d", expectedInt, actualInt)
-		}
-		for i := 0; i < len(header); i++ {
-			actualInt := int(header[i])
-			expectedInt := int('0')
-			if expectedInt != actualInt {
-				t.Errorf("Expected %d but got %d", expectedInt, actualInt)
-			}
-
-		}
-}
-*/
 func TestFileInfo(t *testing.T) {
 	testingFolder := "testing_filter"
 	err := os.MkdirAll(testingFolder, 0o755)
@@ -135,15 +94,6 @@ func TestFileInfo(t *testing.T) {
 	}
 	fileName := "info.txt"
 	filePath := filepath.Join(testingFolder, fileName)
-	/*	f, err := os.Create(filePath)
-		if err != nil {
-			t.Fatal(t)
-		}
-		for i := 0; i < 100; i++ {
-			f.WriteString("0")
-		}
-		f.Close()
-	*/
 	file, err := NewFile(filePath)
 	if err != nil {
 		t.Fatal(err)
