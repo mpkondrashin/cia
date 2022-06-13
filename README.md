@@ -51,6 +51,13 @@ And edit cia.yaml amd filters.yaml files to suite your needs
 ./cia
 ```
 
+### Return code
+If CIA finds any malicious file according to its configuration or faces some error during files scan, it returns non zero return code and zero otherwise.
+
+### Logging
+
+CIA writes its log to stderr and it can be redirected to any file required.
+
 ## Configuration Files
 
 ### cia.yaml
@@ -155,9 +162,3 @@ Rules are applied in order of appearance in this file. First rules that matches 
 (decision is made to submit file for analysis or not). If non of the rules matches, default action
 is **no to submit file**.
 
-## Return code
-If CIA finds any malicious file according to its configuration or faces some error during files scan, it returns non zero return code and zero otherwise.
-
-## Logging
-
-CIA writes its log to stderr and it can be redirected to any file required.
