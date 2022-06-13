@@ -1,8 +1,6 @@
-# Check It All
+# Check It All (CIA)
 
-Check all files in given folder using Trend Micro Deep Discovery Analyzer
-
-**Note** this project requires access to private repository https://github.com/mpkondrashin/ddan
+**Check all files in given folder using Trend Micro Deep Discovery Analyzer**
 
 ## Key Features
 
@@ -25,6 +23,29 @@ Previous checks are chached to enomerously speed up sucential checks if only sma
 ### &#x261E; Configurable theshhold for file safety confidence
 
 Each analysis result can be configured separatly as acceptable or not
+
+
+## Installation
+
+Download binary from releases or download sources and build it yourself:
+
+```commandline
+git clone https://github.com/mpkondrashin/cia.git
+cd cia
+go build
+```
+**Note** you need to have permission to have access to private repository https://github.com/mpkondrashin/ddan.
+
+Copy examples of configuration files
+```commandline
+cp filters_example.yaml filters.yaml
+cp cia_example.yaml cia.yaml
+```
+And edit cia.yaml amd filters.yaml files to suite your needs. Then run
+```commandline
+./cia
+```
+
 
 ## Configuration Files
 
@@ -129,27 +150,6 @@ rules:
 Rules are applied in order of appearance in this file. First rules that matches file is applied
 (decision is made to submit file for analysis or not). If non of the rules matches, default action
 is **no to submit file**.
-
-## Installation
-
-Download binary from releases or download sources and build it yourself:
-
-```commandline
-git clone https://github.com/mpkondrashin/cia.git
-cd cia
-go build
-```
-**Note** you need to have permission to have access to private repository https://github.com/mpkondrashin/ddan.
-
-Copy examples of configuration files
-```commandline
-cp filters_example.yaml filters.yaml
-cp cia_example.yaml cia.yaml
-```
-And edit cia.yaml amd filters.yaml files to suite your needs. Then run
-```commandline
-./cia
-```
 
 ## Return code
 If CIA finds any malicious file according to its configuration or faces some error during files scan, it returns non zero return code and zero otherwise.
