@@ -6,7 +6,7 @@
 
 ### &#x261E; Integration with Trend Micro Deep Discovery Analyzer
 
-CIA provides ability to thoroughly check each file using cutting edge (Trend Micro sandbox technology)[https://www.trendmicro.com/en_us/business/products/network/advanced-threat-protection/analyzer.html]
+CIA provides ability to thoroughly check each file using cutting edge [Trend Micro sandbox technology](https://www.trendmicro.com/en_us/business/products/network/advanced-threat-protection/analyzer.html)
 
 ### &#x261E; Fast Folder Checks
 
