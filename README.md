@@ -6,19 +6,19 @@
 
 ### &#x261E; Integration with Trend Micro Deep Discovery Analyzer
 
-CIA provides ability to thoroughly check each file using cutting edge Trend Micro sandbox technology
+CIA provides ability to thoroughly check each file using cutting edge (Trend Micro sandbox technology)[https://www.trendmicro.com/en_us/business/products/network/advanced-threat-protection/analyzer.html]
 
 ### &#x261E; Fast Folder Checks
 
-CIA has two features to speedup checks by avoiding unnessesary files checks
+CIA has two features to speedup checks by avoiding unnessesary files checks:
 
 #### &bull; Flexible Prefiltering
 
-True file type and file path flexible rule based system to avoid submitting unnessesory files to analysis
+True file type and file path flexible rule based system to avoid submitting unnecessary files for analysis
 
 #### &bull; Caching
 
-Previous checks are chached to enomerously speed up sucential checks if only small portion of files are changed between the runs.
+All checks results are chached to enomerously speed up subsequent checks provided only small portion of files are changed between the runs.
 
 ### &#x261E; Configurable theshhold for file safety confidence
 
