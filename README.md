@@ -143,7 +143,12 @@ cp cia_example.yaml cia.yaml
 ```
 **Note** you need to have permission to have access to private repository https://github.com/mpkondrashin/ddan.
 
-Edit cia.yaml amd filters.yaml files to suite your needs. Then run
+Copy examples of configuration files
+```commandline
+cp filters_example.yaml filters.yaml
+cp cia_example.yaml cia.yaml
+```
+And edit cia.yaml amd filters.yaml files to suite your needs. Then run
 ```commandline
 ./cia
 ```
