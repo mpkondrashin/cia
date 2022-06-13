@@ -1,0 +1,35 @@
+#https://trstringer.com/github-actions-create-release-upload-artifacts/name: Build Home Page
+on: [push]
+jobs:
+  Build-Release:
+    runs-on: windows-latest
+    env:
+      GOPRIVATE: github.com/mpkondrashin/ddan
+      DDAN_GH_REPO_TOKEN: ${{ secrets.DDAN_GH_REPO_TOKEN }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v2
+      - name: Check Go version
+        run: go version
+ #     - run: go env -w GOPRIVATE=github.com/mpkondrashin/ddan
+ #     - run: echo $DDAN_GH_REPO_TOKEN
+ #     - run: echo ${{ secrets.DDAN_GH_REPO_TOKEN }}
+ #     - run: echo $GH_ACCESS_TOKEN
+      - run: git config --global url.https://$DDAN_GH_REPO_TOKEN@github.com/.insteadOf https://github.com/
+      - id: get_version
+        uses: battila7/get-version-action@v2
+      - run: echo ${{ steps.get_version.outputs.version }}
+      - name: Run tests
+        run: go test -v -run TestFilter
+        # application test requires ddanmock to run
+      - name: Build
+        run: go build
+      - name: Pack release
+        run: tar cfvz cia_linux64.tgz cia.exe README.md cia_example.yaml filter_example.yaml
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: cia_linux64.tgz
