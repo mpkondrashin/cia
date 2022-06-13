@@ -27,7 +27,8 @@ Each analysis outcome can be configured separatly as acceptable or not
 
 ## Installation
 
-Download binary from releases or download sources and build it yourself:
+### Get CIA binary
+Download binary from [releases](https://github.com/mpkondrashin/cia/releases) or download sources and build it yourself:
 
 ```commandline
 git clone https://github.com/mpkondrashin/cia.git
@@ -36,16 +37,19 @@ go build
 ```
 **Note** you need to have permission to have access to private repository https://github.com/mpkondrashin/ddan.
 
+### Configuration
+
 Copy examples of configuration files
 ```commandline
 cp filters_example.yaml filters.yaml
 cp cia_example.yaml cia.yaml
 ```
-And edit cia.yaml amd filters.yaml files to suite your needs. Then run
+And edit cia.yaml amd filters.yaml files to suite your needs
+
+### Run
 ```commandline
 ./cia
 ```
-
 
 ## Configuration Files
 
