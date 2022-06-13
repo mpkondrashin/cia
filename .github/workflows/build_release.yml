@@ -1,8 +1,11 @@
 #https://trstringer.com/github-actions-create-release-upload-artifacts/name: Build Home Page
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  Build-Release:
     runs-on: ubuntu-latest
+    env:
+      GOPRIVATE: github.com/mpkondrashin/ddan
+      DDAN_GH_REPO_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -10,6 +13,7 @@ jobs:
         uses: actions/setup-go@v2
       - name: Check Go version
         run: go version
+      - run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
       - id: get_version
         uses: battila7/get-version-action@v2
       - run: echo ${{ steps.get_version.outputs.version }}
