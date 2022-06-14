@@ -157,10 +157,10 @@ Configuration of prefiltering rules
 ```yaml
 rules:
   - submit: true                                  # Submit matching file (true) or not (false)
-    type: path                                    # type of rule. path for file path rules 
-    value: '*.txt'                                # mask for file name
+    type: path                                    # type of rule. "path" for file path rules 
+    value: 'eicar.com'                            # mask for file name
   - submit: true
-    type: mime                                    # type of rule. **mime** for true file type rules 
+    type: mime                                    # type of rule. "mime" for true file type rules 
     value: 'application/*zip'                     # mask for MIME type
   - submit: true
     type: mime
