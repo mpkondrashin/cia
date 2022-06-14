@@ -104,7 +104,8 @@ analyzer:
                                                   # setup. Set any unique value for each
                                                   # CIA used with your Analyzer
 
-cache:
+cache:                                            # configuration of cache database 
+
   type: postgres                                  # The only option supported
 
   host: 10.0.0.100                                # IP or DNS name of PostreSQL server
@@ -141,6 +142,10 @@ folder: <folder>                                  # name of the folder to check
 skip:                                             # list of scanned paths prefixes to skip
   - /proc
 ```
+
+**Note** If whole **cache** secion is omited no cache will be used. In this case for subsequent CIA runs will check
+ only analyzer cache. This will dramanically reduce perforamnce.
+
 ### filters.yaml
 
 Configuration of prefiltering rules

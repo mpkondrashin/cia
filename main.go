@@ -21,7 +21,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"strings"
 
 	_ "github.com/lib/pq"
 
@@ -40,7 +39,7 @@ func main() {
 	app := NewApplication(analyzer)
 	app.SetPrescanJobs(viper.GetInt("analyzer.prescanJobs"))
 	app.SetSubmitJobs(viper.GetInt("analyzer.submitJobs"))
-	app.SetPause(viper.GetDuration("analyer.pullInterval"))
+	app.SetPause(viper.GetDuration("analyzer.pullInterval"))
 	app.SetMaxFileSize(viper.GetInt("analyzer.maxFileSize"))
 
 	filterPath := viper.GetString("filter")
@@ -76,9 +75,8 @@ func setupConfig() error {
 	if err != nil {
 		log.Fatal(fmt.Errorf("Fatal error config file: %w \n", err))
 	}
-
 	viper.SetDefault("analyzer.maxFileSize", "50000000")
-	viper.SetDefault("analyzer.pullIntervalSec", "60")
+	viper.SetDefault("analyzer.pullInterval", "60s")
 	viper.SetDefault("analyzer.prescanJobs", "10")
 	viper.SetDefault("analyzer.submitJobs", "10")
 	viper.SetDefault("analyzer.ignoreTLSError", "false")
@@ -110,14 +108,18 @@ func setupAnalyzer() (ddan.ClientInterace, error) {
 			panic(fmt.Errorf("%s: %w", ddanCachePath, err))
 		}
 	*/
+	var analyzer ddan.ClientInterace
 	db, dbURL := setupCacheDatabase()
-	ddanCache, err := ddan.NewCache(db, dbURL)
-	if err != nil {
-		panic(err)
+	if db != nil {
+		ddanCache, err := ddan.NewCache(db, dbURL)
+		if err != nil {
+			panic(err)
+		}
+		analyzer = ddan.NewCachedClient(productName, hostname, ddanCache)
+	} else {
+		log.Print("WARNING: cache not configured. CIA will run with dramatically reduced perforamnce")
+		analyzer = ddan.NewClient(productName, hostname)
 	}
-
-	analyzer := ddan.NewCachedClient(productName, hostname, ddanCache)
-
 	URL, err := url.Parse(viper.GetString("analyzer.url"))
 	if err != nil {
 		return nil, err
@@ -140,91 +142,16 @@ func setupAnalyzer() (ddan.ClientInterace, error) {
 }
 
 func setupCacheDatabase() (*sql.DB, string) {
+	if viper.Get("cache") == nil {
+		return nil, ""
+	}
 	switch viper.GetString("cache.type") {
 	case "":
 		log.Fatal("cia.yaml: cache.type is missing")
-	case "postgres":
-		fallthrough
-	case "postgresql":
+	case "postgres", "postgresql":
 		return setupPostgreSQLCache()
 	default:
 		log.Fatalf("cia.yaml: cache.type %s is not supported", viper.GetString("cache.type"))
 	}
 	return nil, ""
-}
-
-type PostgresURL struct {
-	host     string
-	port     string
-	username string
-	password string
-	dbname   string
-	sslmode  string
-}
-
-func NewPostresURL() *PostgresURL {
-	viper.SetDefault("cache.port", "5432")
-	viper.SetDefault("cache.username", "postgres")
-	viper.SetDefault("cache.dbname", "cia")
-	viper.SetDefault("cache.sslmode", "disable")
-	return &PostgresURL{
-		host:     viper.GetString("cache.host"),
-		port:     viper.GetString("cache.port"),
-		username: viper.GetString("cache.username"),
-		password: viper.GetString("cache.password"),
-		dbname:   viper.GetString("cache.dbname"),
-		sslmode:  viper.GetString("cache.sslmode"),
-	}
-}
-
-func (p *PostgresURL) NoDatabaseConnect() string {
-	return fmt.Sprintf("postgresql://%s@%s:%s?sslmode=%s&password=%s",
-		p.username, p.host, p.port, p.sslmode, p.password)
-}
-
-func (p *PostgresURL) Connect() string {
-	return fmt.Sprintf("postgresql://%s@%s:%s/%s?sslmode=%s&password=%s",
-		p.username, p.host, p.port, p.dbname, p.sslmode, p.password)
-}
-
-func (p *PostgresURL) String() string {
-	return fmt.Sprintf("postgresql://%s:***@%s:%s/%s?sslmode=%s",
-		p.username, p.host, p.port, p.dbname, p.sslmode)
-}
-
-func setupPostgreSQLCache() (*sql.DB, string) {
-	pURL := NewPostresURL()
-	createPostgreDatabase(pURL)
-	url := pURL.Connect()
-	db, err := sql.Open("postgres", url)
-	if err != nil {
-		log.Fatalf("%v: Open: %v", pURL, err)
-	}
-	err = db.Ping()
-	if err != nil {
-		log.Fatalf("%v: %v", pURL, err)
-	}
-	return db, pURL.String()
-}
-
-func createPostgreDatabase(pURL *PostgresURL) {
-	url := pURL.NoDatabaseConnect()
-	db, err := sql.Open("postgres", url)
-	if err != nil {
-		log.Fatalf("%s: Open: %v", url, err)
-	}
-	defer func() {
-		if err := db.Close(); err != nil {
-			log.Fatalf("%v: Close: %v", pURL, err)
-		}
-	}()
-	execStmt := fmt.Sprintf("CREATE DATABASE \"%s\"", pURL.dbname)
-	_, err = db.Exec(execStmt)
-	if err != nil {
-		if !strings.Contains(err.Error(), "already exists") {
-			log.Fatalf("%v: CREATE DATABASE: %v", pURL, err)
-		}
-	} else {
-		log.Printf("Database %s created", pURL.dbname)
-	}
 }

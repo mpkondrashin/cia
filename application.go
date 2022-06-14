@@ -139,7 +139,7 @@ func (a *Application) ProcessFolder(folder string) error {
 	close(a.submit)
 	a.submitWg.Wait()
 	duration := time.Since(startTime)
-	log.Printf("Operation time: %v", duration)
+	log.Printf("Operation time: %v", duration.Round(time.Second))
 	if a.returnCode > 0 {
 		return fmt.Errorf("Found %d inadmissible files", a.returnCode)
 	}
