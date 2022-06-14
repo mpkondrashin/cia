@@ -8,6 +8,10 @@
 
 CIA provides ability to thoroughly check each file using cutting edge [Trend Micro sandbox technology](https://www.trendmicro.com/en_us/business/products/network/advanced-threat-protection/analyzer.html)
 
+#### &bull; CI/CD Pipline Integration
+
+CIA designed to be used in piplines for automated checks safety of any files amount 
+
 ### &#x261E; Fast Folder Checks
 
 CIA provides two features to speedup checks by avoiding unnessesary files checks:
