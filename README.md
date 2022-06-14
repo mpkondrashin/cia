@@ -10,7 +10,7 @@ CIA provides ability to thoroughly check each file using cutting edge [Trend Mic
 
 ### &#x261E; CI/CD Pipline Integration
 
-CIA designed to be used in piplines for automated checks safety of any files amount 
+CIA designed to be used in piplines for automated checks of files safety 
 
 ### &#x261E; Fast Folder Checks
 
