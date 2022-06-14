@@ -291,8 +291,8 @@ func (a *Application) Pass(b ddan.BriefReport) (bool, error) {
 		case ddan.RatingHighRisk:
 			return a.accept["highRisk"], nil
 		default:
-			//log.Fatalf("Unknown RiskLevel: %d", b.RiskLevel)
-			return false, fmt.Errorf("Unknown RiskLevel: %v", b)
+			log.Fatalf("ERROR: %s: %v", b.SHA1, b.RiskLevel)
+			return a.accept["error"], nil
 		}
 	case ddan.StatusError:
 		return a.accept["error"], nil
