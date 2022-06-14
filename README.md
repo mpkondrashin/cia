@@ -14,7 +14,7 @@ CIA designed to be used in piplines for automated checks of files safety
 
 ### &#x261E; Fast Checks
 
-CIA provides two features to speedup checks by avoiding unnessesary files checks:
+CIA provides three features to speedup checks by avoiding unnessesary files checks:
 
 #### &bull; Flexible Prefiltering
 
