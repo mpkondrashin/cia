@@ -12,7 +12,7 @@ CIA provides ability to thoroughly check each file using cutting edge [Trend Mic
 
 CIA designed to be used in piplines for automated checks of files safety 
 
-### &#x261E; Fast Folder Checks
+### &#x261E; Fast Checks
 
 CIA provides two features to speedup checks by avoiding unnessesary files checks:
 
