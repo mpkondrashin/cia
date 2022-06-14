@@ -16,16 +16,11 @@ CIA designed to be used in piplines for automated checks of files safety
 
 CIA provides three features to speedup operation by avoiding unnessesary files checks:
 
-#### &bull; Flexible Prefiltering
-
+- **Flexible Prefiltering**<br/>
 True file type and file path flexible rule based system to avoid unnecessary submittions of files for analysis
-
-#### &bull; Caching
-
+- **Caching**<br/>
 All checks results are chached to enomerously speed up subsequent checks provided only small portion of files are changed between the runs.
-
-#### &bull; Folders To Avoid
-
+- **Folders To Avoid**</br>
 CIA offers feature to avoid certain subfolders checks at all
 
 ### &#x261E; Configurable theshhold for file safety confidence
