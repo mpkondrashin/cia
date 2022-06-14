@@ -24,6 +24,10 @@ True file type and file path flexible rule based system to avoid unnecessary sub
 
 All checks results are chached to enomerously speed up subsequent checks provided only small portion of files are changed between the runs.
 
+#### &bull; Folders To Avoid
+
+CIA offers feature to avoid certain subfolders checks at all
+
 ### &#x261E; Configurable theshhold for file safety confidence
 
 Each analysis outcome can be configured separatly as acceptable or not
