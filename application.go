@@ -259,7 +259,7 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 			fallthrough
 		case ddan.StatusDone:
 			log.Printf("%v: %v", report.RiskLevel, file)
-			ok, err := a.Pass(report)
+			ok, err := a.Pass(report, file)
 			if err != nil {
 				log.Printf("%s: %v: %v", sha1, file, err)
 				return false
@@ -272,32 +272,32 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 }
 
 // Pass - return whenever file should be accepted to pass
-func (a *Application) Pass(b ddan.BriefReport) (bool, error) {
+func (a *Application) Pass(b ddan.BriefReport, file *File) bool {
 	switch b.SampleStatus {
 	case ddan.StatusNotFound, ddan.StatusArrived, ddan.StatusProcessing:
 		log.Fatal(ddan.NotReadyError(ddan.StatusCodeNames[b.SampleStatus]))
 	case ddan.StatusDone:
 		switch b.RiskLevel {
 		case ddan.RatingUnsupported:
-			return a.accept["unscannable"], nil
+			return a.accept["unscannable"]
 		case ddan.RatingNoRiskFound:
-			return true, nil
+			return true
 		case ddan.RatingLowRisk:
-			return a.accept["lowRisk"], nil
+			return a.accept["lowRisk"]
 		case ddan.RatingMediumRisk:
-			return a.accept["mediumRisk"], nil
+			return a.accept["mediumRisk"]
 		case ddan.RatingHighRisk:
-			return a.accept["highRisk"], nil
+			return a.accept["highRisk"]
 		default:
-			log.Printf("ERROR: %s: %v", b.SHA1, b.RiskLevel)
-			return a.accept["error"], nil
+			log.Printf("ERROR: %v: %v", file, b.RiskLevel)
+			return a.accept["error"]
 		}
 	case ddan.StatusError:
-		return a.accept["error"], nil
+		return a.accept["error"]
 	case ddan.StatusTimeout:
-		return a.accept["timeout"], nil
+		return a.accept["timeout"]
 	}
-	return false, nil
+	return false
 }
 
 // SleepLong - sleep for long when file is still in the queue
