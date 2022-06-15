@@ -260,7 +260,6 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 		case ddan.StatusDone:
 			log.Printf("%v: %v", report.RiskLevel, file)
 			ok, err := a.Pass(report)
-			fmt.Printf("Got from Pass: %v, %v", ok, err)
 			if err != nil {
 				log.Printf("%s: %v: %v", sha1, file, err)
 				return false
@@ -290,7 +289,7 @@ func (a *Application) Pass(b ddan.BriefReport) (bool, error) {
 		case ddan.RatingHighRisk:
 			return a.accept["highRisk"], nil
 		default:
-			log.Fatalf("ERROR: %s: %v", b.SHA1, b.RiskLevel)
+			log.Printf("ERROR: %s: %v", b.SHA1, b.RiskLevel)
 			return a.accept["error"], nil
 		}
 	case ddan.StatusError:
