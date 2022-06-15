@@ -259,12 +259,7 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 			fallthrough
 		case ddan.StatusDone:
 			log.Printf("%v: %v", report.RiskLevel, file)
-			ok, err := a.Pass(report, file)
-			if err != nil {
-				log.Printf("%s: %v: %v", sha1, file, err)
-				return false
-			}
-			return ok
+			return a.Pass(report, file)
 		default:
 			log.Fatalf("%s: %v: Unexpected status value: %v", sha1, file, report.SampleStatus)
 		}
