@@ -254,14 +254,13 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 		case ddan.StatusProcessing:
 			a.SleepShort()
 			continue
-		case ddan.StatusError:
-			fallthrough
-		case ddan.StatusTimeout:
+		case ddan.StatusError, ddan.StatusTimeout:
 			log.Printf("%v for %v", report.SampleStatus, file)
 			fallthrough
 		case ddan.StatusDone:
 			log.Printf("%v: %v", report.RiskLevel, file)
 			ok, err := a.Pass(report)
+			fmt.Printf("Got from Pass: %v, %v", ok, err)
 			if err != nil {
 				log.Printf("%s: %v: %v", sha1, file, err)
 				return false
