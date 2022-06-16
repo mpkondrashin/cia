@@ -21,6 +21,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"strings"
 
 	_ "github.com/lib/pq"
 
@@ -75,6 +76,11 @@ func setupConfig() error {
 	if err != nil {
 		log.Fatal(fmt.Errorf("Fatal error config file: %w \n", err))
 	}
+
+	viper.SetEnvPrefix("CIA")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
 	viper.SetDefault("analyzer.maxFileSize", "50000000")
 	viper.SetDefault("analyzer.pullInterval", "60s")
 	viper.SetDefault("analyzer.prescanJobs", "10")
