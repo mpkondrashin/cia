@@ -127,10 +127,6 @@ func (a *Application) ProcessFolder(folder string) error {
 			return nil
 		}
 		count++
-		//	if start.After(time.Now().Add(10 * time.Second)) {
-		//		start = time.Now()
-		//		log.Printf("Found %d files", count)
-		//	}
 		file := NewFileWithInfo(path, info)
 		a.prescan <- file
 		return nil
@@ -263,7 +259,11 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 			log.Printf("%v for %v", report.SampleStatus, file)
 			fallthrough
 		case ddan.StatusDone:
-			log.Printf("%v: %v", report.RiskLevel, file)
+			if report.RiskLevel < 0 {
+				log.Printf("ERROR: %v: %v", report.RiskLevel, file)
+			} else {
+				log.Printf("%v: %v", report.RiskLevel, file)
+			}
 			return a.Pass(report, file)
 		default:
 			log.Fatalf("%s: %v: Unexpected status value: %v", sha1, file, report.SampleStatus)
@@ -289,7 +289,7 @@ func (a *Application) Pass(b ddan.BriefReport, file *File) bool {
 		case ddan.RatingHighRisk:
 			return a.accept["highRisk"]
 		default:
-			log.Printf("ERROR: %v: %v", file, b.RiskLevel)
+			//			log.Printf("ERROR: %v: %v", file, b.RiskLevel)
 			return a.accept["error"]
 		}
 	case ddan.StatusError:
