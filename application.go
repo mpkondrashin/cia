@@ -122,6 +122,10 @@ func (a *Application) ProcessFolder(folder string) error {
 			}
 			return nil
 		}
+		if !info.Mode().IsRegular() {
+			log.Printf("Ignore non regular file: %s", path)
+			return nil
+		}
 		count++
 		//	if start.After(time.Now().Add(10 * time.Second)) {
 		//		start = time.Now()
@@ -308,6 +312,6 @@ func (a *Application) SleepShort() {
 
 // SleepRandom - sleep for random time between d/2 and d
 func (a *Application) SleepRandom(d time.Duration) {
-	duration := rand.Int63n(int64(d))
-	time.Sleep(time.Duration(duration))
+	duration := rand.Int63n(int64(d) / 2)
+	time.Sleep(time.Duration(duration) + d/2)
 }
