@@ -152,6 +152,7 @@ skip:                                             # list of scanned paths prefix
 #### Environment
 
 All configuration paramenter value can be provided using environment variable.
+
 **Examples:**<br/>
 For PostreSQL cache password it will be CIA_CACHE_PASSWORD<br/>
 For DDAn API key it will be CIA_ANALYZER_APIKEY 
@@ -180,3 +181,12 @@ Rules are applied in order of appearance in this file. First rules that matches 
 (decision is made to submit file for analysis or not). If non of the rules matches, default action
 is **no to submit file**.
 
+## Reduce overblocking
+
+If CIA is falesly considers some files malicious followin options are available (in order from wider to more granular approach):
+
+1. Change this file check result to allowed in "allow" section of cia.yaml
+2. Configure to skip this file folder in cia.yaml
+3. Configure not to submit this file path in filters.yaml
+4. Configure not su submit this file type in filters.yaml
+5. Change this file hash entry in cache database to status=4 and risk_level=0 
