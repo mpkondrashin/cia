@@ -183,7 +183,7 @@ is **no to submit file**.
 
 ## Reduce overblocking
 
-If CIA is falesly considers some files malicious followin options are available (in order from wider to more granular approach):
+If CIA is falsely considers some files to be malicious following options are available (in order from wider to more granular approach):
 
 1. Change this file check result to allowed in "allow" section of cia.yaml
 2. Configure to skip this file folder in cia.yaml
