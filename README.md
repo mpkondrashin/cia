@@ -149,7 +149,7 @@ skip:                                             # list of scanned paths prefix
 **Note** If whole **cache** secion is omited no cache will be used. In this case for subsequent CIA runs will check
  only analyzer cache. This will dramanically reduce perforamnce.
 
-## Environment
+#### Environment
 
 All configuration paramenter value can be provided using environment variable.
 **Examples:**<br/>
