@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
@@ -307,7 +308,6 @@ func (a *Application) SleepShort() {
 
 // SleepRandom - sleep for random time between d/2 and d
 func (a *Application) SleepRandom(d time.Duration) {
-	time.Sleep(d)
-	//duration := rand.Int63n(int64(d / 2))
-	//time.Sleep(time.Duration(duration) + d/2)
+	duration := rand.Int63n(int64(d))
+	time.Sleep(time.Duration(duration))
 }
