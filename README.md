@@ -187,6 +187,6 @@ If CIA is falsely considers some files to be malicious following options are ava
 
 1. Change this file check result to allowed in "allow" section of cia.yaml
 2. Configure to skip this file folder in cia.yaml
-3. Configure not to submit this file path in filters.yaml
-4. Configure not to submit this file type in filters.yaml
+3. Configure not to submit this file type in filters.yaml
+4. Configure not to submit this file path in filters.yaml
 5. Change this file hash entry in cache database to status=4 and risk_level=0 
