@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"math/rand"
 	"os"
@@ -116,15 +117,22 @@ func (a *Application) ProcessFolder(folder string) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() {
+		switch {
+		case info.Mode()&os.ModeDir != 0:
 			if a.ShouldSkipFolder(path) {
 				return filepath.SkipDir
 			}
 			return nil
-		}
-		if !info.Mode().IsRegular() {
-			log.Printf("Ignore non regular file: %s", path)
-			return nil
+		case info.Mode()&os.ModeSymlink != 0:
+			log.Printf("Ignore symlink file: %s", path)
+		case info.Mode()&(os.ModeDevice|fs.ModeCharDevice) != 0:
+			log.Printf("Ignore device file: %s", path)
+		case info.Mode()&os.ModeNamedPipe != 0:
+			log.Printf("Ignore named pipe file: %s", path)
+		case info.Mode()&os.ModeSocket != 0:
+			log.Printf("Ignore socket file: %s", path)
+		case info.Mode()&os.ModeIrregular != 0:
+			log.Printf("Ignore irregular file: %s", path)
 		}
 		count++
 		file := NewFileWithInfo(path, info)
