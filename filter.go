@@ -35,14 +35,14 @@ func LoadFilter(filePath string) (*Filter, error) {
 	return &filter, nil
 }
 
-func (r *Rule) ShouldSubmit(f *File) (bool, error) {
+func (r *Rule) ShouldSubmit(file *File) (bool, error) {
 	switch r.Type {
 	case "path":
-		if fnmatch.Match(r.Value, f.Path, 0) {
+		if fnmatch.Match(r.Value, file.Path, 0) {
 			return r.Submit, nil
 		}
 	case "mime":
-		mime, err := f.Mime()
+		mime, err := file.Mime()
 		if err != nil {
 			return false, err
 		}
@@ -58,14 +58,14 @@ func (r *Rule) ShouldSubmit(f *File) (bool, error) {
 
 func (f *Filter) CheckFile(file *File) (bool, error) {
 	for _, r := range f.Rules {
-		rc, err := r.ShouldSubmit(file)
+		shouldSubmit, err := r.ShouldSubmit(file)
 		if err != nil {
 			if errors.Is(err, ErrNoMatch) {
 				continue
 			}
 			return false, err
 		}
-		return rc, nil
+		return shouldSubmit, nil
 	}
 	return false, nil
 }

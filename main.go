@@ -37,6 +37,9 @@ func main() {
 	}
 
 	analyzer, err := setupAnalyzer()
+	if err != nil {
+		log.Fatal(err)
+	}
 	app := NewApplication(analyzer)
 	app.SetPrescanJobs(viper.GetInt("analyzer.prescanJobs"))
 	app.SetSubmitJobs(viper.GetInt("analyzer.submitJobs"))
@@ -104,16 +107,9 @@ func setupAnalyzer() (ddan.ClientInterace, error) {
 	productName := viper.GetString("analyzer.productName")
 	hostname, err := os.Hostname()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("setup Analyzer: %w", err)
 	}
 
-	/*
-		ddanCachePath := "cache.db"
-		db, err := sql.Open("sqlite", ddanCachePath)
-		if err != nil {
-			panic(fmt.Errorf("%s: %w", ddanCachePath, err))
-		}
-	*/
 	var analyzer ddan.ClientInterace
 	db, dbURL := setupCacheDatabase()
 	if db != nil {
@@ -123,12 +119,12 @@ func setupAnalyzer() (ddan.ClientInterace, error) {
 		}
 		analyzer = ddan.NewCachedClient(productName, hostname, ddanCache)
 	} else {
-		log.Print("WARNING: cache not configured. CIA will run with dramatically reduced perforamnce")
+		log.Print("WARNING: cache not configured. CIA will run with dramatically reduced performance")
 		analyzer = ddan.NewClient(productName, hostname)
 	}
 	URL, err := url.Parse(viper.GetString("analyzer.url"))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("setup Analyzer: analyzer.url value: %w", err)
 	}
 
 	analyzer.SetAnalyzer(URL,

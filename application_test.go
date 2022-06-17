@@ -13,7 +13,7 @@ import (
 
 func analyzerMockupClient(t *testing.T) (ddan.ClientInterace, func()) {
 	AnalyzerURL := "127.0.0.1:8000"
-	apiKey := "C7213F09-B399-4C71-9D1C-3A99905215E9"
+	apiKey := "00000000-0000-0000-0000-000000000000"
 	mockup := ddan.NewMockup(AnalyzerURL, apiKey)
 	cerr := make(chan error)
 	go mockup.Run(cerr)
@@ -48,7 +48,8 @@ func analyzerMockupClient(t *testing.T) (ddan.ClientInterace, func()) {
 }
 
 func prepairFolder(t *testing.T, baseFolder string) {
-	files := []string{
+	t.Helper()
+	paths := []string{
 		"unsupported.txt",
 		"no_risk_found.txt",
 		"medium_risk.txt",
@@ -62,42 +63,43 @@ func prepairFolder(t *testing.T, baseFolder string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, each := range files {
-		filePath := filepath.Join(baseFolder, each)
+	for _, path := range paths {
+		filePath := filepath.Join(baseFolder, path)
 		dir := filepath.Dir(filePath)
 		err := os.MkdirAll(dir, 0o755)
 		if err != nil {
 			t.Fatal(err)
 		}
-		content := filepath.Base(each)
+		content := filepath.Base(path)
 		content = content[:len(content)-len(filepath.Ext(content))]
-		f, err := os.Create(filePath)
+		file, err := os.Create(filePath)
 		if err != nil {
 			t.Fatal(err)
 		}
-		_, err = f.WriteString(content)
+		_, err = file.WriteString(content)
 		if err != nil {
 			t.Fatal(err)
 		}
-		f.Close()
+		file.Close()
 	}
 }
 
 func prepairBigFolder(t *testing.T, baseFolder string) {
+	t.Helper()
 	var layer func(string, int)
 	layer = func(base string, level int) {
 		for i := 0; i < 100; i++ {
 			fileName := fmt.Sprintf("%0X.dat", i)
 			filePath := filepath.Join(base, fileName)
-			f, err := os.Create(filePath)
+			file, err := os.Create(filePath)
 			if err != nil {
 				t.Fatal(err)
 			}
-			_, err = f.WriteString(".")
+			_, err = file.WriteString(".")
 			if err != nil {
 				t.Fatal(err)
 			}
-			f.Close()
+			file.Close()
 		}
 		if level == 0 {
 			return

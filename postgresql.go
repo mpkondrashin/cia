@@ -52,30 +52,30 @@ func setupPostgreSQLCache() (*sql.DB, string) {
 	pURL := NewPostresURL()
 	createPostgreDatabase(pURL)
 	url := pURL.Connect()
-	db, err := sql.Open("postgres", url)
+	pgSQL, err := sql.Open("postgres", url)
 	if err != nil {
 		log.Fatalf("%v: Open: %v", pURL, err)
 	}
-	err = db.Ping()
+	err = pgSQL.Ping()
 	if err != nil {
 		log.Fatalf("%v: %v", pURL, err)
 	}
-	return db, pURL.String()
+	return pgSQL, pURL.String()
 }
 
 func createPostgreDatabase(pURL *PostgresURL) {
 	url := pURL.NoDatabaseConnect()
-	db, err := sql.Open("postgres", url)
+	sqlDB, err := sql.Open("postgres", url)
 	if err != nil {
 		log.Fatalf("%s: Open: %v", url, err)
 	}
 	defer func() {
-		if err := db.Close(); err != nil {
+		if err := sqlDB.Close(); err != nil {
 			log.Fatalf("%v: Close: %v", pURL, err)
 		}
 	}()
 	execStmt := fmt.Sprintf("CREATE DATABASE \"%s\"", pURL.dbname)
-	_, err = db.Exec(execStmt)
+	_, err = sqlDB.Exec(execStmt)
 	if err != nil {
 		if !strings.Contains(err.Error(), "already exists") {
 			log.Fatalf("%v: CREATE DATABASE: %v", pURL, err)

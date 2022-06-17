@@ -17,6 +17,10 @@ import (
 	"github.com/mpkondrashin/ddan"
 )
 
+var (
+	ErrInadmissibleFiles = errors.New("inadmissible files")
+)
+
 var verdictList = [...]string{
 	"highRisk",
 	"mediumRisk",
@@ -104,16 +108,29 @@ func (a *Application) ProcessFolder(folder string) error {
 	err := a.analyzer.Register(context.TODO())
 	if err != nil {
 		if !errors.Is(err, ddan.ErrAlreadyRegistered) {
-			return fmt.Errorf("Analyzer Register: %w", err)
+			return fmt.Errorf("analyzer register: %w", err)
 		}
 	} else {
 		log.Print("Registration complete")
 	}
 	a.StartDispatchers()
+	a.WalkFolder(folder)
+	close(a.prescan)
+	a.prescanWg.Wait()
+	close(a.submit)
+	a.submitWg.Wait()
+	duration := time.Since(startTime)
+	log.Printf("Operation time: %v", duration.Round(time.Second))
+	if a.returnCode > 0 {
+		return fmt.Errorf("Found %d %w", a.returnCode, ErrInadmissibleFiles) //nolint
+	}
+	return nil
+}
+
+func (a *Application) WalkFolder(folder string) error {
 	log.Printf("Process folder: %s", folder)
-	//start := time.Now()
 	count := 0
-	err = filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -145,18 +162,9 @@ func (a *Application) ProcessFolder(folder string) error {
 		return nil
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("processing %s folder: %w", folder, err)
 	}
 	log.Printf("Scan complete. Found %d files. Waiting for analysis results", count)
-	close(a.prescan)
-	a.prescanWg.Wait()
-	close(a.submit)
-	a.submitWg.Wait()
-	duration := time.Since(startTime)
-	log.Printf("Operation time: %v", duration.Round(time.Second))
-	if a.returnCode > 0 {
-		return fmt.Errorf("Found %d inadmissible files", a.returnCode)
-	}
 	return nil
 }
 
@@ -170,23 +178,18 @@ func (a *Application) ShouldSkipFolder(folder string) bool {
 }
 
 func (a *Application) StartDispatchers() {
-	//log.Print("StartSubmissionDispatchers")
 	a.submitWg.Add(a.submitJobs)
 	for i := 0; i < a.submitJobs; i++ {
-		//log.Print("Start submission")
 		go a.SubmissionDispatcher()
 	}
-	//log.Print("StartPrescanDispatchers")
 	a.prescanWg.Add(a.prescanJobs)
 	for i := 0; i < a.prescanJobs; i++ {
-		//log.Print("Start prescan")
 		go a.PrescanDispatcher()
 	}
 }
 
 func (a *Application) PrescanDispatcher() {
 	defer a.prescanWg.Done()
-	//log.Print("Start PrescanDispatcher")
 	for file := range a.prescan {
 		a.PrescanFile(file)
 	}
@@ -219,18 +222,17 @@ func (a *Application) SubmissionDispatcher() {
 	defer a.submitWg.Done()
 	for file := range a.submit {
 		if !a.CheckFile(file) {
-			//	log.Printf("INC %v", file)
 			a.IncReturnCode()
 		}
 	}
 }
 
 func (a *Application) CheckFile(file *File) bool {
-	//log.Printf("CheckFile %s", path)
 	sha1, err := file.Sha1()
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	sha1List := []string{sha1}
 	duplicates, err := a.analyzer.CheckDuplicateSample(context.TODO(), sha1List, 0)
 	if err != nil {
@@ -249,7 +251,7 @@ func (a *Application) CheckFile(file *File) bool {
 	return a.WaitForResult(file, sha1)
 }
 
-// WaitForResult - wait for result from Analyzer for file defined by sha1
+// WaitForResult - wait for result from Analyzer for file defined by sha1.
 func (a *Application) WaitForResult(file *File, sha1 string) bool {
 	for {
 		sha1List := []string{sha1}
@@ -258,7 +260,6 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 			log.Fatal(err)
 		}
 		report := briefReport.Reports[0]
-		//log.Printf("%s (%d): %v", path, count, report)
 		switch report.SampleStatus {
 		case ddan.StatusNotFound:
 			log.Fatalf("Not found by Analyzer: %s (%v)", sha1, file)
@@ -284,27 +285,13 @@ func (a *Application) WaitForResult(file *File, sha1 string) bool {
 	}
 }
 
-// Pass - return whenever file should be accepted to pass
+// Pass - return whenever file should be accepted to pass.
 func (a *Application) Pass(b ddan.BriefReport, file *File) bool {
 	switch b.SampleStatus {
 	case ddan.StatusNotFound, ddan.StatusArrived, ddan.StatusProcessing:
 		log.Fatal(ddan.NotReadyError(ddan.StatusCodeNames[b.SampleStatus]))
 	case ddan.StatusDone:
-		switch b.RiskLevel {
-		case ddan.RatingUnsupported:
-			return a.accept["unscannable"]
-		case ddan.RatingNoRiskFound:
-			return true
-		case ddan.RatingLowRisk:
-			return a.accept["lowRisk"]
-		case ddan.RatingMediumRisk:
-			return a.accept["mediumRisk"]
-		case ddan.RatingHighRisk:
-			return a.accept["highRisk"]
-		default:
-			//			log.Printf("ERROR: %v: %v", file, b.RiskLevel)
-			return a.accept["error"]
-		}
+		return a.PassForRiskLevel(b.RiskLevel)
 	case ddan.StatusError:
 		return a.accept["error"]
 	case ddan.StatusTimeout:
@@ -313,18 +300,35 @@ func (a *Application) Pass(b ddan.BriefReport, file *File) bool {
 	return false
 }
 
-// SleepLong - sleep for long when file is still in the queue
+func (a *Application) PassForRiskLevel(riskLevel ddan.Rating) bool {
+	switch riskLevel {
+	case ddan.RatingUnsupported:
+		return a.accept["unscannable"]
+	case ddan.RatingNoRiskFound:
+		return true
+	case ddan.RatingLowRisk:
+		return a.accept["lowRisk"]
+	case ddan.RatingMediumRisk:
+		return a.accept["mediumRisk"]
+	case ddan.RatingHighRisk:
+		return a.accept["highRisk"]
+	default:
+		return a.accept["error"]
+	}
+}
+
+// SleepLong - sleep for long when file is still in the queue.
 func (a *Application) SleepLong() {
 	a.SleepRandom(a.pullInterval)
 }
 
-// SleepShort - sleep for short when file is alredy being processed
+// SleepShort - sleep for short when file is alredy being processed.
 func (a *Application) SleepShort() {
 	a.SleepRandom(a.pullInterval / 4)
 }
 
-// SleepRandom - sleep for random time between d/2 and d
+// SleepRandom - sleep for random time between d/2 and d.
 func (a *Application) SleepRandom(d time.Duration) {
-	duration := rand.Int63n(int64(d) / 2)
+	duration := rand.Int63n(int64(d) / 2) //nolint
 	time.Sleep(time.Duration(duration) + d/2)
 }

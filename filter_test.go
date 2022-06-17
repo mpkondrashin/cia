@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"testing"
 )
@@ -40,14 +39,11 @@ win32.exe:   application/x-dosexec
 */
 
 func TestFilterLoad(t *testing.T) {
+	t.Parallel()
 	testingFolder := "testing_filter"
-	/*	err := os.MkdirAll(testingFolder, 0o755)
-		if err != nil {
-			t.Fatal(err)
-		} */
 	filterFileName := "filter.yaml"
 	filterFilePath := filepath.Join(testingFolder, filterFileName)
-	err := ioutil.WriteFile(filterFilePath, []byte(filterYaml), 0o644)
+	err := ioutil.WriteFile(filterFilePath, []byte(filterYaml), 0o600)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,10 +84,7 @@ func TestFilterLoad(t *testing.T) {
 
 func TestFileInfo(t *testing.T) {
 	testingFolder := "testing_filter"
-	err := os.MkdirAll(testingFolder, 0o755)
-	if err != nil {
-		t.Fatal(err)
-	}
+	t.Parallel()
 	fileName := "info.txt"
 	filePath := filepath.Join(testingFolder, fileName)
 	file, err := NewFile(filePath)
