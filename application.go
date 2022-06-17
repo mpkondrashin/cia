@@ -125,14 +125,19 @@ func (a *Application) ProcessFolder(folder string) error {
 			return nil
 		case info.Mode()&os.ModeSymlink != 0:
 			log.Printf("Ignore symlink file: %s", path)
+			return nil
 		case info.Mode()&(os.ModeDevice|fs.ModeCharDevice) != 0:
 			log.Printf("Ignore device file: %s", path)
+			return nil
 		case info.Mode()&os.ModeNamedPipe != 0:
 			log.Printf("Ignore named pipe file: %s", path)
+			return nil
 		case info.Mode()&os.ModeSocket != 0:
 			log.Printf("Ignore socket file: %s", path)
+			return nil
 		case info.Mode()&os.ModeIrregular != 0:
 			log.Printf("Ignore irregular file: %s", path)
+			return nil
 		}
 		count++
 		file := NewFileWithInfo(path, info)
