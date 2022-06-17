@@ -9,8 +9,10 @@ import (
 	"github.com/go-yaml/yaml"
 )
 
-var ErrUnknownRuleType = errors.New("unknown rule type")
-var ErrNoMatch = errors.New("no match")
+var (
+	ErrUnknownRuleType = errors.New("unknown rule type")
+	ErrNoMatch         = errors.New("no match")
+)
 
 type Filter struct {
 	Rules []Rule `yaml:"rules"`
@@ -53,7 +55,6 @@ func (r *Rule) ShouldSubmit(file *File) (bool, error) {
 		return false, fmt.Errorf("%s: %w", r.Type, ErrUnknownRuleType)
 	}
 	return false, ErrNoMatch
-
 }
 
 func (f *Filter) CheckFile(file *File) (bool, error) {

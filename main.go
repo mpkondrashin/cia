@@ -115,7 +115,7 @@ func setupAnalyzer() (ddan.ClientInterace, error) {
 	if db != nil {
 		ddanCache, err := ddan.NewCache(db, dbURL)
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("setup Analyzer: %w", err)
 		}
 		analyzer = ddan.NewCachedClient(productName, hostname, ddanCache)
 	} else {
