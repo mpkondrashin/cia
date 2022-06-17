@@ -21,7 +21,7 @@ var (
 	ErrInadmissibleFiles = errors.New("inadmissible files")
 )
 
-var verdictList = [...]string{
+var VerdictList = [...]string{
 	"highRisk",
 	"mediumRisk",
 	"lowRisk",
@@ -52,6 +52,7 @@ func (a *Application) String() string {
 		a.analyzer, a.maxFileSize, a.submitJobs, a.filter, a.pullInterval, a.accept)
 }
 
+// NewApplication - create application struct
 func NewApplication(analyzer ddan.ClientInterace) *Application {
 	return &Application{
 		analyzer:     analyzer,
@@ -63,46 +64,55 @@ func NewApplication(analyzer ddan.ClientInterace) *Application {
 	}
 }
 
+// SetPause - set time to wait between pulling results from Analyzer
 func (a *Application) SetPause(pullInterval time.Duration) *Application {
 	a.pullInterval = pullInterval
 	return a
 }
 
-func (a *Application) SetAction(actionName string, pass bool) *Application {
-	a.accept[actionName] = pass
+// SetAction - set action to giver risk level
+func (a *Application) SetAction(riskLevel string, pass bool) *Application {
+	a.accept[riskLevel] = pass
 	return a
 }
 
+// SetPrescanJobs - number of goroutines to implement prescan
 func (a *Application) SetPrescanJobs(jobs int) *Application {
 	a.prescanJobs = jobs
 	return a
 }
 
+// SetSubmitJobs - number of goroutines to submit files to analyzer and wait for result
 func (a *Application) SetSubmitJobs(jobs int) *Application {
 	a.submitJobs = jobs
 	return a
 }
 
+// SetMaxFileSize - set maximum file size to submit to analyzer
 func (a *Application) SetMaxFileSize(maxFileSize int) *Application {
 	a.maxFileSize = maxFileSize
 	return a
 }
 
+// SetFilter - set Filter struct
 func (a *Application) SetFilter(filter *Filter) *Application {
 	a.filter = filter
 	return a
 }
 
+// SetSkipFolders - set list of folders to skip
 func (a *Application) SetSkipFolders(skipFolders []string) *Application {
 	a.skipFolders = skipFolders
 	return a
 }
 
+// IncReturnCode - increment number of malicious files by 1
 func (a *Application) IncReturnCode() {
 	_ = atomic.AddInt32(&a.returnCode, 1)
 }
 
-func (a *Application) ProcessFolder(folder string) error {
+// Run - execute all operations
+func (a *Application) Run(folder string) error {
 	startTime := time.Now()
 	log.Print(a)
 	err := a.analyzer.Register(context.TODO())
@@ -127,6 +137,7 @@ func (a *Application) ProcessFolder(folder string) error {
 	return nil
 }
 
+// WalkFolder - recursively process all files in given folders
 func (a *Application) WalkFolder(folder string) error {
 	log.Printf("Process folder: %s", folder)
 	count := 0
@@ -168,6 +179,7 @@ func (a *Application) WalkFolder(folder string) error {
 	return nil
 }
 
+// ShouldSkipFolder - folders to skip at all
 func (a *Application) ShouldSkipFolder(folder string) bool {
 	for _, each := range a.skipFolders {
 		if strings.HasPrefix(folder, each) {
@@ -177,6 +189,7 @@ func (a *Application) ShouldSkipFolder(folder string) bool {
 	return false
 }
 
+// StartDispatchers - run submission and prescan dispatchers
 func (a *Application) StartDispatchers() {
 	a.submitWg.Add(a.submitJobs)
 	for i := 0; i < a.submitJobs; i++ {
@@ -188,6 +201,7 @@ func (a *Application) StartDispatchers() {
 	}
 }
 
+// PrescanDispatcher - process all files in prescan channel
 func (a *Application) PrescanDispatcher() {
 	defer a.prescanWg.Done()
 	for file := range a.prescan {
@@ -195,6 +209,7 @@ func (a *Application) PrescanDispatcher() {
 	}
 }
 
+// PrescanFile - preliminary file checks
 func (a *Application) PrescanFile(file *File) {
 	if a.filter != nil {
 		submit, err := a.filter.CheckFile(file)
@@ -218,6 +233,7 @@ func (a *Application) PrescanFile(file *File) {
 	a.submit <- file
 }
 
+// SubmissionDispatcher - process files in submit channel
 func (a *Application) SubmissionDispatcher() {
 	defer a.submitWg.Done()
 	for file := range a.submit {
@@ -227,6 +243,7 @@ func (a *Application) SubmissionDispatcher() {
 	}
 }
 
+// CheckFile - check file and return whenever it is Ok
 func (a *Application) CheckFile(file *File) bool {
 	sha1, err := file.Sha1()
 	if err != nil {

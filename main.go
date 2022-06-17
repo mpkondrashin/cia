@@ -55,7 +55,7 @@ func main() {
 		app.SetFilter(filter)
 	}
 
-	for _, each := range verdictList {
+	for _, each := range VerdictList {
 		app.SetAction(each, viper.GetBool("allow."+each))
 	}
 
@@ -64,7 +64,7 @@ func main() {
 		app.SetSkipFolders(skipFolders)
 	}
 
-	err = app.ProcessFolder(viper.GetString("folder"))
+	err = app.Run(viper.GetString("folder"))
 	if err != nil {
 		log.Fatal(err)
 	}

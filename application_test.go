@@ -130,11 +130,11 @@ func TestApplication001(t *testing.T) {
 	prepairFolder(t, baseFolder)
 	analyzer, stop := analyzerMockupClient(t)
 	app := NewApplication(analyzer).SetPause(1 * time.Millisecond)
-	for _, each := range verdictList {
+	for _, each := range VerdictList {
 		app.SetAction(each, true)
 	}
 	app.SetAction("highRisk", false)
-	err := app.ProcessFolder(baseFolder)
+	err := app.Run(baseFolder)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,7 +161,7 @@ func TestApplicationMaxFileSize(t *testing.T) {
 	analyzer, stop := analyzerMockupClient(t)
 	app := NewApplication(analyzer).SetPause(1 * time.Millisecond)
 	app.SetMaxFileSize(10)
-	err := app.ProcessFolder(baseFolder)
+	err := app.Run(baseFolder)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -173,11 +173,11 @@ func TestApplicationBigFolder(t *testing.T) {
 	prepairBigFolder(t, baseFolder)
 	analyzer, stop := analyzerMockupClient(t)
 	app := NewApplication(analyzer).SetPause(1 * time.Millisecond)
-	for _, each := range verdictList {
+	for _, each := range VerdictList {
 		app.SetAction(each, true)
 	}
 	app.SetAction("highRisk", false)
-	err := app.ProcessFolder(baseFolder)
+	err := app.Run(baseFolder)
 	if err != nil {
 		t.Fatal(err)
 	}
