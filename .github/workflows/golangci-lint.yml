@@ -15,8 +15,12 @@ jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
+    env:
+      GOPRIVATE: github.com/mpkondrashin/ddan
+      DDAN_GH_REPO_TOKEN: ${{ secrets.DDAN_GH_REPO_TOKEN }}
     steps:
       - uses: actions/setup-go@v3
+      - run: git config --global url.https://$DDAN_GH_REPO_TOKEN@github.com/.insteadOf https://github.com/
 #        with:
 #          go-version: 1.17
       - uses: actions/checkout@v3
