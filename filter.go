@@ -1,3 +1,11 @@
+/*
+
+Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
+
+filter.go - filtering files according to given rules
+
+*/
+
 package main
 
 import (

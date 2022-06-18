@@ -1,4 +1,12 @@
 
+#
+#
+# Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
+#
+# cia_example.yaml - configuration example. Copy to cia.yaml before use
+#
+#
+
 analyzer:
   url: https://10.0.0.10
   apiKey: c7213a09-b399-4c71-9d1c-3a99905215e9

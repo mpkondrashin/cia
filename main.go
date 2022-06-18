@@ -1,18 +1,19 @@
 /*
+Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
 
+main.go - read configuration and run main functionality
 
-1. Search for files
-2. Apply ignore list
-3. Check local fast_cache(?)
-4. Check local cache(?)
-5. Check Analyzer Cache
-6. Submit files
-7. Get brief report
-8. Record in caches
-9. Return error code
-
-
+Program outline:
+1. Scan give folder for files
+2. For each file:
+2.1. Apply ignore folders list
+2.2. Apply ignore rules
+2.3. Check Analyzer cache
+2.4. Submit files for analysis
+2.5. Get brief report from Analyser
+3. Return error code if there where any findings
 */
+
 package main
 
 import (

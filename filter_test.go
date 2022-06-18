@@ -1,8 +1,19 @@
+/*
+
+Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
+
+filter_test.go - tests for Filter
+
+*/
+
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -61,7 +72,7 @@ func TestFilterLoad(t *testing.T) {
 			t.Fatal(err)
 		}
 		t.Logf("Submit=%v: %s", submit, fileName)
-		mime, err := MimeType(filePath)
+		mime, err := mimeType(filePath)
 		if err != nil {
 			t.Fatal(mime)
 		}
@@ -94,4 +105,14 @@ func TestFileInfo(t *testing.T) {
 	if expectedInt != actualInt {
 		t.Errorf("Expected %d but got %d", expectedInt, actualInt)
 	}
+}
+
+func mimeType(filePath string) (string, error) {
+	options := []string{"--mime-type", "--brief", filePath}
+	cmd := exec.Command("file", options...)
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("%s %v: %w", "file", options, err)
+	}
+	return strings.TrimRight(string(output), "\n"), nil
 }

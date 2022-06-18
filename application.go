@@ -1,3 +1,10 @@
+/*
+
+Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
+
+application.go - main application logic
+
+*/
 package main
 
 import (

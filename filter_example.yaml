@@ -1,3 +1,12 @@
+
+#
+#
+# Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
+#
+# filter_example.yaml - filtering rules example. Copy to filter.yaml before use
+#
+#
+
 rules:
   - submit: true
     type: mime

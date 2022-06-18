@@ -1,3 +1,11 @@
+/*
+
+Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
+
+postresql.go - setup connection to PostreSQL used for caching
+
+*/
+
 package main
 
 import (

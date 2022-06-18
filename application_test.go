@@ -1,3 +1,11 @@
+/*
+
+Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
+
+application_test.go - tests for Application
+
+*/
+
 package main
 
 import (

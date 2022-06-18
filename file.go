@@ -1,3 +1,11 @@
+/*
+
+Check It All (c) 2022 by Michael Kondrashin mkondrashin@gmail.com
+
+file.go - file operations
+
+*/
+
 package main
 
 import (
