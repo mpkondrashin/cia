@@ -27,7 +27,7 @@ jobs:
       - name: Build
         run: go build
       - name: Pack release
-        run: tar cfvz cia_linux64.tgz cia README.md cia_example.yaml filter_example.yaml
+        run: tar cfvz cia_linux64.tgz cia LICENSE README.md cia_example.yaml filter_example.yaml
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
