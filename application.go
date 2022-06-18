@@ -17,9 +17,7 @@ import (
 	"github.com/mpkondrashin/ddan"
 )
 
-var (
-	ErrInadmissibleFiles = errors.New("inadmissible files")
-)
+var ErrInadmissibleFiles = errors.New("inadmissible files")
 
 var VerdictList = [...]string{
 	"highRisk",
@@ -124,7 +122,10 @@ func (a *Application) Run(folder string) error {
 		log.Print("Registration complete")
 	}
 	a.StartDispatchers()
-	a.WalkFolder(folder)
+	err = a.WalkFolder(folder)
+	if err != nil {
+		log.Fatal(err)
+	}
 	close(a.prescan)
 	a.prescanWg.Wait()
 	close(a.submit)

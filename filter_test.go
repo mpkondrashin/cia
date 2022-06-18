@@ -6,8 +6,7 @@ import (
 	"testing"
 )
 
-var (
-	filterYaml = `# test data
+var filterYaml = `# test data
 rules:
 #  - submit: false
 #    type: path
@@ -25,7 +24,6 @@ rules:
     type: mime
     value: '*shellscript'	
 `
-)
 
 /*
 archive.gz:  application/gzip

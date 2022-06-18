@@ -24,7 +24,6 @@ import (
 	"strings"
 
 	_ "github.com/lib/pq"
-
 	"github.com/mpkondrashin/ddan"
 	"github.com/spf13/viper"
 )

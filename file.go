@@ -10,19 +10,8 @@ import (
 	"strings"
 )
 
-//const HeaderSize = 216
-
-//type Header []byte
-
-//var (
-//	ErrFileTooSmall = errors.New("file too small")
-
-//	ErrUnknownFileType = errors.New("unknown file type")
-//)
-
 type File struct {
 	Path string
-	//	header Header
 	Info os.FileInfo
 	mime string
 }

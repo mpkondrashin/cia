@@ -44,7 +44,6 @@ func analyzerMockupClient(t *testing.T) (ddan.ClientInterace, func()) {
 		SetAnalyzer(URL, apiKey, false).
 		SetSource("500", "sourceName").
 		SetUUID("12341234-1234-1234-1234-123412341234"), stop
-
 }
 
 func prepairFolder(t *testing.T, baseFolder string) {
