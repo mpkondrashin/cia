@@ -38,7 +38,7 @@ git clone https://github.com/mpkondrashin/cia.git
 cd cia
 go build
 ```
-**Note** you need to have permission to have access to private repository https://github.com/mpkondrashin/ddan.
+**Note:** you need to have permission to have access to private repository https://github.com/mpkondrashin/ddan.
 
 ### Configuration
 
