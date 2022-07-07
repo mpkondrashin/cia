@@ -146,7 +146,7 @@ skip:                                             # list of scanned paths prefix
   - /proc
 ```
 
-**Note** If whole **cache** secion is omited no cache will be used. In this case for subsequent CIA runs will check
+**Note** If whole **cache** section is omited no cache will be used. In this case for subsequent CIA runs will check
  only analyzer cache. This will dramanically reduce perforamnce.
 
 #### Environment
@@ -154,8 +154,8 @@ skip:                                             # list of scanned paths prefix
 All configuration paramenter value can be provided using environment variable.
 
 **Examples:**<br/>
-For PostreSQL cache password it will be CIA_CACHE_PASSWORD<br/>
-For DDAn API key it will be CIA_ANALYZER_APIKEY 
+For PostreSQL cache password it will be CIA_CACHE_PASSWORD variable<br/>
+For DDAn API key it will be CIA_ANALYZER_APIKEY variable
 
 ### filters.yaml
 
