@@ -47,7 +47,7 @@ Copy examples of configuration files
 cp filters_example.yaml filters.yaml
 cp cia_example.yaml cia.yaml
 ```
-And edit cia.yaml amd filters.yaml files to suite your needs. Check [avaliable options](#cia_taml) below.
+And edit cia.yaml amd filters.yaml files to suite your needs. Check [avaliable options](#cia_yaml) below.
 
 ### Run
 ```commandline
