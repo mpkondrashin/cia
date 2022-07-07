@@ -47,7 +47,7 @@ Copy examples of configuration files
 cp filters_example.yaml filters.yaml
 cp cia_example.yaml cia.yaml
 ```
-And edit cia.yaml amd filters.yaml files to suite your needs
+And edit cia.yaml amd filters.yaml files to suite your needs. Check [avaliable options](#cia_taml) below.
 
 ### Run
 ```commandline
@@ -64,7 +64,7 @@ CIA writes its log to stderr and it can be redirected to any file required.
 ## Configuration Files
 
 ### cia.yaml
-
+<a name="cia_yaml"></a>
 Main CIA configuration file
 
 ```yaml
@@ -74,16 +74,16 @@ analyzer:
   apiKey: 00000000-0000-0000-0000-000000000000    # Check Help->About Analyser 
                                                   # web GUI for correct value
   
-  maxFileSize: 60000000                           # Maxinum file size. It can
+  maxFileSize: 60000000                           # Maxinum file size. It should
                                                   # not be bigger then configured
                                                   # in Analyzer iteslf
   
-  prescanJobs: 3                                  # How meny prescan jobs to run.
+  prescanJobs: 16                                 # How meny prescan jobs to run.
                                                   # For maximum perforamnce should
                                                   # be not less than CPU cores
 
-  submitJobs: 3                                   # How many parallel checks to run.
-                                                  # Should reflect nubmer os sandboxes
+  submitJobs: 120                                 # How many parallel checks to run.
+                                                  # Should reflect nubmer of sandboxes
                                                   # in Analyzer
 
   pullInterval: 60s                               # How often to check analyzer for
