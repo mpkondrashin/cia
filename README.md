@@ -155,7 +155,9 @@ All configuration paramenter value can be provided using environment variable.
 
 **Examples:**<br/>
 For PostreSQL cache password it will be CIA_CACHE_PASSWORD variable<br/>
-For DDAn API key it will be CIA_ANALYZER_APIKEY variable
+For DDAn API key it will be CIA_ANALYZER_APIKEY 
+
+**Note:** Environment variable values take precedence over configuration file options.
 
 ### filters.yaml
 
