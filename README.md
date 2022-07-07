@@ -154,8 +154,8 @@ skip:                                             # list of scanned paths prefix
 All configuration paramenter value can be provided using environment variable.
 
 **Examples:**<br/>
-For PostreSQL database password from cache section will be CIA_CACHE_PASSWORD variable<br/>
-For DDAn API key from analyzer section will be CIA_ANALYZER_APIKEY 
+For PostreSQL database password from ```cache``` section will be CIA_CACHE_PASSWORD variable<br/>
+For DDAn API key from ```analyzer``` section will be CIA_ANALYZER_APIKEY 
 
 **Note:** Environment variable values take precedence over configuration file options.
 
