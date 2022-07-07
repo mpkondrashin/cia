@@ -183,7 +183,7 @@ Rules are applied in order of appearance in this file. First rules that matches 
 (decision is made to submit file for analysis or not). If non of the rules matches, default action
 is **not to submit file**.
 
-## Reduce Overblocking Workarounds
+## Overblocking Workarounds
 
 If CIA is falsely considers some files to be malicious following options are available (in order from wider to more granular approach):
 
