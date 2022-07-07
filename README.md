@@ -181,9 +181,9 @@ rules:
 
 Rules are applied in order of appearance in this file. First rules that matches file is applied
 (decision is made to submit file for analysis or not). If non of the rules matches, default action
-is **no to submit file**.
+is **not to submit file**.
 
-## Reduce overblocking
+## Reduce overblocking workarounds
 
 If CIA is falsely considers some files to be malicious following options are available (in order from wider to more granular approach):
 
