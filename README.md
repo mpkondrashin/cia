@@ -151,7 +151,7 @@ skip:                                             # list of scanned paths prefix
 
 #### Environment
 
-All configuration paramenter value can be provided using environment variable.
+All configuration paramenters can be provided using environment variables.
 
 **Examples:**<br/>
 For PostreSQL database password from ```cache``` section will be CIA_CACHE_PASSWORD variable<br/>
